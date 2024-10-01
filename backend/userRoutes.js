@@ -30,6 +30,39 @@ userRoutes.route('/users/:id').get(async (request,response) => {
         throw new Error("Data not found")
     }
 })
+
 // create one
+// route can be same but use different methods (get/post)
+userRoutes.route('/users').post(async (request,response) => {
+    let db = database.getDb();
+    let mongoObject = {
+        name: request.body.name,
+        email: request.body.email,
+        password: request.body.password,
+    };
+    let data = await db.collection("users").insertOne(mongoObject);
+    response.json(data);
+})
+
 // update one
+userRoutes.route('/users/:id').put(async (request,response) => {
+    let db = database.getDb();
+    let mongoObject = {
+        $set: {
+            name: request.body.name,
+            email: request.body.email,
+            password: request.body.password,
+        }
+    };
+    let data = await db.collection("users").updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
+    response.json(data);
+})
+
 // delete one
+userRoutes.route('/users/:id').delete(async (request,response) => {
+    let db = database.getDb();
+    let data = await db.collection("users").deleteOne({_id: new ObjectId(request.params.id)})
+    response.json(data);
+})
+
+module.exports = userRoutes;
