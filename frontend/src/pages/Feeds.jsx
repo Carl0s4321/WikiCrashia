@@ -1,7 +1,6 @@
 export function Feeds() {
-    return(
-        <>
-            Feeds
-        </>
-    )
+  return (
+    <>
+    </>
+  )
 }
