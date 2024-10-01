@@ -6,6 +6,7 @@ import { Feeds } from '../pages/Feeds';
 import { Home } from '../pages/Home';
 import { Profile } from '../pages/Profile';
 import { Layout } from '../components/layout';
+import { Authentication } from '../pages/Authentication';
 
 function App() {
   const [users, setUsers] = useState();
@@ -25,8 +26,9 @@ function App() {
     <Router>
      {/* {JSON.stringify(users)} */}
      <Routes>
-      <Route path="/home" element={<Home/>}/>
+      <Route path='/' element={<Authentication/>}/>
       <Route element={<Layout/>}>
+        <Route path="/home" element={<Home/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/feeds" element={<Feeds/>}/>
       </Route>
