@@ -8,7 +8,7 @@ const client = new MongoClient(process.env.ATLAS_URI, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 // async function run() {
@@ -28,8 +28,15 @@ const client = new MongoClient(process.env.ATLAS_URI, {
 let database;
 
 module.exports = {
-    connectToServer: () =>{
-        database = client.db("sample_mflix")
+    connectToServer: async function() {
+        try {
+            await client.connect();
+            database = client.db("sample_mflix");
+            console.log("Successfully connected to MongoDB.");
+        } catch (err) {
+            console.error("Error connecting to MongoDB:", err);
+            process.exit(1);
+        }
     },
     getDb: () => {
         return database
