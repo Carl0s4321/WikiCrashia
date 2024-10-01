@@ -26,9 +26,8 @@ function App() {
     <Router>
      {/* {JSON.stringify(users)} */}
      <Routes>
-      <Route path="/" element={<Landing/>}/>
+      <Route path="/home" element={<Home/>}/>
       <Route element={<Layout/>}>
-        <Route path="/home" element={<Home/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/feeds" element={<Feeds/>}/>
       </Route>
