@@ -1,7 +1,9 @@
 export function Home() {
     return(
         <>
-            Home
+           <div className="font-proxima">
+                Home test font
+            </div>
         </>
     )
 }
