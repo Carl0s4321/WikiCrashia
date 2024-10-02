@@ -2,3 +2,19 @@
 .second-div-hero {
     height: 800px;
 }   
+
+.button-hero {
+    width: 30%;
+    color: white;
+    background-color: black;
+    height: 50px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease-in;
+    transition: color 0.3s ease-in;
+}
+
+.button-hero:hover {
+    color: black;
+    background-color: rgb(201, 201, 201);
+    
+}
