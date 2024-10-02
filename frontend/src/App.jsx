@@ -6,7 +6,7 @@ import { Landing } from '../pages/Landing'
 import { Feeds } from '../pages/Feeds';
 import { Home } from '../pages/Home';
 import { Profile } from '../pages/Profile';
-import { Layout } from '../components/layout';
+import { Layout } from '../components/Layout';
 
 function App() {
   const [users, setUsers] = useState();
