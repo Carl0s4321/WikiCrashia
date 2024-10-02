@@ -12,16 +12,16 @@ import { Authentication } from '../pages/Authentication';
 function App() {
   const [users, setUsers] = useState();
   
-  useEffect(()=> {
-    async function loadAllUsers() {
-      let data = await getUsers();
-      if(data){
-        setUsers(data);
-      }
-    }
+  // useEffect(()=> {
+  //   async function loadAllUsers() {
+  //     let data = await getUsers();
+  //     if(data){
+  //       setUsers(data);
+  //     }
+  //   }
 
-    loadAllUsers()
-  }, [])
+  //   loadAllUsers()
+  // }, [])
 
   return (
     <Router>
