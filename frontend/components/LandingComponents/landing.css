@@ -1,0 +1,46 @@
+/* Might have to adjust how the navbar is, or wll update this if necessary*/
+.second-div-hero {
+    height: 800px;
+}   
+
+.button-hero {
+    width: 30%;
+    color: white;
+    background-color: black;
+    height: 50px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    transition: color 0.3s ease;
+}
+
+.button-hero:hover {
+    color: black;
+    background-color: rgb(201, 201, 201);
+    
+}
+
+
+/* Feature css stuff*/
+.image-features {
+    height: 570px;
+}
+
+@media (max-width: 961px) {
+    .image-features {
+        height: 400px;
+    }
+}
+
+.progress-bar {
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
+}
+
+.progress-button {
+    background-color: rgb(78, 78, 78);
+    color: white;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 10px;
+}
