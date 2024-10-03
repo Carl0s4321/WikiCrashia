@@ -33,3 +33,11 @@ export async function deleteUser(id) {
 
     return response
 }
+
+export async function loginUser(user){
+    // console.log(user)
+    const response = await axios.post(`${URL}/users/login`, user)
+    // console.log(response)
+    return response
+
+}

@@ -33,8 +33,8 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
   position: relative;
   overflow: hidden;
-  width: 768px;
-  max-width: 100%;
+  /* width: 400px; */
+  max-width: 800px;
   min-height: 480px;
 }
 
@@ -87,13 +87,13 @@
 
 .container input{
   background-color: #eee;
-  border: none;
+  /* border: none; */
   margin: 8px 0;
   padding: 10px 15px;
   font-size: 13px;
   border-radius: 8px;
   width: 100%;
-  outline: none;
+  /* outline: none; */
 }
 
 .form-container{

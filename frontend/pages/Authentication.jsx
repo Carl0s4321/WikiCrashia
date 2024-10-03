@@ -5,7 +5,6 @@ import {LogIn} from "../components/LogIn"
 export function Authentication(){
     const [isSignUp, setIsSignUp] = useState(false);
     return(
-        <>
             <div className={`container ${isSignUp? 'active' : ''}`}>
                 {/* <div className={`form-container ${isSignUp? 'sign-up' : 'sign-in'}`}>
                     {isSignUp? <CreateUser/> : <LogIn/>}
@@ -29,6 +28,5 @@ export function Authentication(){
                     </div>
                 </div>
             </div>
-        </>
     )
 }
