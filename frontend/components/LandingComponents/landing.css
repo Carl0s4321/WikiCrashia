@@ -9,12 +9,16 @@
     background-color: black;
     height: 50px;
     border-radius: 10px;
-    transition: background-color 0.3s ease-in;
-    transition: color 0.3s ease-in;
+    transition: background-color 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .button-hero:hover {
     color: black;
     background-color: rgb(201, 201, 201);
     
+}
+
+.image-features {
+    width: 500px;
 }
