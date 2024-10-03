@@ -2,6 +2,8 @@ import { useState } from "react";
 import { loginUser } from "../src/api";
 import { useNavigate } from "react-router-dom";
 
+// TODO: add moonloader from react spinners
+
 export function LogIn() {
     const navigate = useNavigate();
     const [loginErr, setLoginErr] = useState(false);
