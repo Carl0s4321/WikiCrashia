@@ -19,6 +19,28 @@
     
 }
 
+
+/* Feature css stuff*/
 .image-features {
-    width: 500px;
+    height: 570px;
+}
+
+@media (max-width: 961px) {
+    .image-features {
+        height: 400px;
+    }
+}
+
+.progress-bar {
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
+}
+
+.progress-button {
+    background-color: rgb(78, 78, 78);
+    color: white;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 10px;
 }
