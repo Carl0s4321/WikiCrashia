@@ -41,8 +41,7 @@ export function FeatureLanding() {
 
   return (
     <>
-
-      <h1 className='font-proxima text-5xl font-bold mt-24 mb-6 px-14 text-center'>How it works</h1>
+      <h1 className='font-proxima text-5xl font-bold mt-60 mb-6 px-14 text-center'>How it works</h1>
 
       <div className='font-proxima px-14'>
         <h1>Step {step} of 3</h1>
