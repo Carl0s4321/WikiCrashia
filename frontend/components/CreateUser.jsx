@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { createUser } from "../src/api";
 import { useNavigate } from "react-router-dom";
+import {useUserStore} from '../src/store/userStore'
 
 export function CreateUser() {
   const navigate = useNavigate();
+  const {userData} = useUserStore();
+  const [errMsg, setErrMsg] = useState("");
   const [passError, setPassError] = useState(false);
   const [user, setUser] = useState({
     name: "",
@@ -13,14 +16,20 @@ export function CreateUser() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    let response = await createUser(user);
-    // console.log(response)
-    if (response.status !== 200) {
-      alert("Account can't be created");
-    } else if (response.data.message === "Email is taken") {
+
+    try{
+      let response = await createUser(user);
+      
+      if(response.data.success){
+        navigate("/home");
+      }else{
         setPassError(true);
-    } else {
-      navigate("/home");
+        setErrMsg(response.data.message)
+      }
+
+    } catch(error){
+      alert(error);
+      console.error(error);
     }
   }
 
@@ -39,7 +48,7 @@ export function CreateUser() {
         onChange={handleChange}
         name="name"
       />
-      {passError? <span className="text-red-500 flex justify-start">Email is taken!</span> : <></>}
+      {passError? <span className="text-red-500 flex justify-start">{errMsg}</span> : <></>}
       <input
         className={`${
           passError

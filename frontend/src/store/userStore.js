@@ -1,7 +1,13 @@
 import { create } from 'zustand'
 
-const useUserStore = create((set) => ({
-  bears: 0,
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
+export const useUserStore = create((set) => ({
+  userData: {
+    name:"",
+    email:"",
+  },
+  setUser: (user) => set({ user, userId: user?.$id }),
+  clearUser: () => set({ user: null, userId: null }),
+
+  isAuthenticated: false,
+  setIsAuthenticated: (status) => set({ isAuthenticated: status }),
 }))
