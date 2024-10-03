@@ -16,7 +16,21 @@
 .button-hero:hover {
     color: black;
     background-color: rgb(201, 201, 201);
-    
+}
+
+.button-hero2 {
+    width: 30%;
+    color: white;
+    background-color: grey;
+    height: 50px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    transition: color 0.3s ease;
+}
+
+.button-hero2:hover {
+    color:black;
+    background-color: rgb(165, 165, 165);
 }
 
 
