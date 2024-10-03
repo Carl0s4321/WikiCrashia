@@ -27,11 +27,11 @@ function App() {
      {/* {JSON.stringify(users)} */}
      <Routes>
       <Route path="/" element={<Landing/>}/>
+      <Route path='auth' element={<Authentication/>}/>
       <Route element={<Layout/>}>
         <Route path="/home" element={<Home/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/feeds" element={<Feeds/>}/>
-        <Route path='/auth' element={<Authentication/>}/>
       </Route>
      </Routes>
     </Router>
