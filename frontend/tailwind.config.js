@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
         fontFamily: {
-            'proxima': ['proxima-reg', 'sans-serif'],
-            'proximaBold': ['proxima-bold', 'sans-serif'],
+            'proxima': ['proxima_reg', 'sans-serif'],
+            'proximaBold': ['proxima_bold', 'sans-serif'],
         }
     },
   },
