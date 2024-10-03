@@ -1,11 +1,14 @@
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
+/* Can adjust this wrapper for padding or stuff or moving it*/
+.authWrapper {
+    display: flex;
+    min-height: 100vh;
+    max-width: 1270px;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
 
 .navbar{
   position: fixed;
