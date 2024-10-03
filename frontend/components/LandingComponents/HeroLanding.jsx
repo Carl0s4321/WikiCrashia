@@ -1,6 +1,10 @@
 import './landing.css';
 import globe from '../../assets/images/globe.svg';
+import { useNavigate } from 'react-router-dom';
+
 export function HeroLanding() {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className='bg-white text-black font-proxima'>
@@ -12,8 +16,8 @@ export function HeroLanding() {
                   <h1 className='font-proximaBold text-7xl sm:text-center md:text-start'>Crashia</h1>
                   <p className='pt-4'> We believe social media provides a dependable resource for real-time data, as users frequently post about accidents they witness or are involved in, offering an opportunity to respond to incidents faster.</p>
                 </div>
-                <button className='button-hero sm:mx-auto lg:mx-0' >
-                  View map
+                <button className='button-hero sm:mx-auto lg:mx-0' onClick={()=>{navigate("auth")}} >
+                  Get started
                 </button>
               </div>
             </div>
