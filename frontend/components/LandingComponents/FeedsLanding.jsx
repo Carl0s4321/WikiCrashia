@@ -27,7 +27,7 @@ const testPosts = [
     img: person3,
     username: 'Sia',
     userAt: 'NotSia',
-    post: 'I just witnessed a sem-truck flip over on West Bound 407. TRAFFIC!',
+    post: 'I just witnessed a semi-truck flip over on West Bound 407. TRAFFIC!',
     time: '1:14 PM',
     date: 'Oct 3, 2024'
   }
