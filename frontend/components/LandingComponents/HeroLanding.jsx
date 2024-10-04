@@ -7,7 +7,7 @@ export function HeroLanding() {
 
   return (
     <>
-      <div className='bg-white text-black font-proxima'>
+      <div className='bg-zinc-50 text-black font-proxima'>
         <div className='flex flex-col md:flex-row items-center justify-between md:justify-center'>
         <div className='w-full md:w-6/12'>
               <div className='flex flex-col space-y-12 px-14 py-10'>
