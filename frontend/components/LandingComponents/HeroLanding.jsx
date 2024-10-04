@@ -28,7 +28,7 @@ export function HeroLanding() {
             </div>
             <div className='relative second-div-hero w-full md:w-6/12 bg-black flex items-center justify-center'>
               <div>
-                <img src={globe} alt="Globe" className="max-w-full max-h-full object-contain" />
+                <img src={globe} alt="Globe" className="max-w-full max-h-full object-contain animate-spin-horizontal" />
               </div>
             </div>
         </div>
