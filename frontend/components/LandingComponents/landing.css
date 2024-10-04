@@ -58,3 +58,9 @@
     padding-right: 15px;
     border-radius: 10px;
 }
+
+/* Feed card landing stuff */
+.feed-image-size {
+    width: 8vw;
+    border-radius: 9999px;
+}
