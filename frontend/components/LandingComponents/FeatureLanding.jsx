@@ -67,7 +67,7 @@ export function FeatureLanding() {
             {whatWeDo[step - 1].desc}
             </p>  
           </div>
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between sm:pb-20'>
             <button className='progress-button disabled:opacity-50'
               onClick={handlePrevButton}
               disabled={step === 1}
