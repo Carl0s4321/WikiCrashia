@@ -20,8 +20,8 @@ export function HeroLanding() {
                   <button className='button-hero' onClick={()=>{navigate("auth")}} >
                     View Map
                   </button>
-                  <button className='button-hero2'>
-                    View Feeds
+                  <button className='button-hero2' onClick={()=>{navigate("feeds")}}>
+                    View Feeds 
                   </button>
                 </div>
               </div>

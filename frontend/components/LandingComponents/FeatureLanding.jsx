@@ -53,7 +53,7 @@ export function FeatureLanding() {
         </div>
       </div>
 
-      <div className='flex sm:flex-col md:flex-row items-center justify-between space-x-2 px-14 space-y-5 font-proxima text-neutral-500'>
+      <div className='flex sm:flex-col md:flex-row items-center justify-between space-x-2 px-14 space-y-5 font-proxima text-neutral-500 mb-60'>
         <div className="w-full max-w-md aspect-square relative image-features">
               <img 
                 className='absolute inset-0 w-full h-full object-contain' 
