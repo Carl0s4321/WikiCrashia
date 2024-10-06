@@ -4,12 +4,12 @@
 
 @font-face {
     font-family: 'proxima_reg';
-    src: url('./assets/fonts/Proxima Nova Reg.ttf') format('truetype');
+    src: url('../assets/fonts/Proxima Nova Reg.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'proxima_bold';
-    src: url('./assets/fonts/Proxima Nova Bold.ttf') format('truetype');
+    src: url('../assets/fonts/Proxima Nova Bold.ttf') format('truetype');
 }
 
 /*:root {
