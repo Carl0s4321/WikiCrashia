@@ -7,7 +7,7 @@ export function HeroLanding() {
 
   return (
     <>
-      <div className='bg-white text-black font-proxima'>
+      <div className='bg-zinc-50 text-black font-proxima'>
         <div className='flex flex-col md:flex-row items-center justify-between md:justify-center'>
         <div className='w-full md:w-6/12'>
               <div className='flex flex-col space-y-12 px-14 py-10'>
@@ -20,15 +20,15 @@ export function HeroLanding() {
                   <button className='button-hero' onClick={()=>{navigate("auth")}} >
                     View Map
                   </button>
-                  <button className='button-hero2'>
-                    View Feeds
+                  <button className='button-hero2' onClick={()=>{navigate("feeds")}}>
+                    View Feeds 
                   </button>
                 </div>
               </div>
             </div>
             <div className='relative second-div-hero w-full md:w-6/12 bg-black flex items-center justify-center'>
               <div>
-                <img src={globe} alt="Globe" className="max-w-full max-h-full object-contain" />
+                <img src={globe} alt="Globe" className="max-w-full max-h-full object-contain animate-spin-horizontal" />
               </div>
             </div>
         </div>
