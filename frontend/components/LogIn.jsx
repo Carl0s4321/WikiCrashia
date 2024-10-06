@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginUser } from "../src/api";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // TODO: add moonloader from react spinners
 
@@ -21,6 +22,7 @@ export function LogIn() {
       let response = await loginUser(user);
       if(response.data.success){
         sessionStorage.setItem("User", response.data.token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
         navigate("/home");
       } else{
         setLoginErr(true);
