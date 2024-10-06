@@ -1,28 +1,36 @@
 import { useState } from "react";
 import { loginUser } from "../src/api";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // TODO: add moonloader from react spinners
 
 export function LogIn() {
-    const navigate = useNavigate();
-    const [loginErr, setLoginErr] = useState(false);
-    const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate();
+  const [loginErr, setLoginErr] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
 
   async function handleSubmit(e) {
+    setLoginErr(false);
     e.preventDefault();
-    let response = await loginUser(user);
-    if(response.data.success){
-        console.log(response.data.user)
-        navigate("/home")
-    }else{
+
+    try{
+      let response = await loginUser(user);
+      if(response.data.success){
+        sessionStorage.setItem("User", response.data.token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
+        navigate("/home");
+      } else{
         setLoginErr(true);
-        setErrMsg(response.data.message)
-        // console.log(response.data.message)
+        setErrMsg(response.data.message);
+      }
+    } catch (error){
+      alert(error)
+      console.error(error)
     }
   }
 
@@ -30,14 +38,17 @@ export function LogIn() {
     setUser({ ...user, [e.target.name]: e.target.value });
   }
 
-
   return (
     <form onSubmit={handleSubmit}>
       <h1 className="text-3xl font-bold">Sign In</h1>
-      {loginErr? <span className="text-red-500 flex justify-start">{errMsg}</span> : <></>}
+      {loginErr ? (
+        <span className="text-red-500 flex justify-start">{errMsg}</span>
+      ) : (
+        <></>
+      )}
       <input
         className={`${
-        loginErr
+          loginErr
             ? "border-red-500 outline-red-500 border-2 border-solid"
             : "border-none outline-none"
         }`}
@@ -45,21 +56,24 @@ export function LogIn() {
         placeholder="Email"
         required
         onChange={(e) => {
-        //   setPassError(false);
+          setLoginErr(false);
           handleChange(e);
         }}
         name="email"
       />
       <input
         className={`${
-        loginErr
+          loginErr
             ? "border-red-500 outline-red-500 border-2 border-solid"
             : "border-none outline-none"
         }`}
         type="password"
         placeholder="Password"
         required
-        onChange={handleChange}
+        onChange={(e) => {
+          setLoginErr(false);
+          handleChange(e);
+        }}
         name="password"
       />
 
