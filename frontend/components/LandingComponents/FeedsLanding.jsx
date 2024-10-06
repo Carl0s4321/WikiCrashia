@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './landing.css';
 import { FeedCardLanding } from './FeedCardLanding'
 import person1 from '../../assets/images/person1.svg';
@@ -37,6 +38,8 @@ export function FeedsLanding() {
 
   const [currentPost, setCurrentPost] = useState(0);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const timerForPost = setInterval(() => {
       setCurrentPost(prevPost => (prevPost + 1) % testPosts.length);
@@ -69,7 +72,7 @@ export function FeedsLanding() {
                 See real time feeds and posts on events!
               </h2>
               <div className='flex sm:justify-center md:justify-start align-center mt-5'>
-                <button className='button-hero2 p-2 w-5/12'>
+                <button className='button-hero2 p-2 w-5/12' onClick={() => navigate("feeds")}>
                   View Feed
                 </button>
               </div>
