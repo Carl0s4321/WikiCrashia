@@ -2,16 +2,19 @@ const express = require('express');
 const database = require('./connect');
 const ObjectId = require('mongodb').ObjectId;
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require("dotenv").config({path: "./config.env"})
 
 let userRoutes = express.Router();
 const SALT = 6;
+const USER_COLLECTION_NAME = "users"
 
 // make CRUD operations:
 // retrieve all
 // http://localhost:3000/users
 userRoutes.route('/users').get(async (request,response) => {
     let db = database.getDb();
-    let data = await db.collection("users").find({}).toArray();
+    let data = await db.collection(USER_COLLECTION_NAME).find({}).toArray();
 
     if(data.length > 0){
         response.json(data);
@@ -24,7 +27,7 @@ userRoutes.route('/users').get(async (request,response) => {
 // http://localhost:3000/users/12345
 userRoutes.route('/users/:id').get(async (request,response) => {
     let db = database.getDb();
-    let data = await db.collection("users").findOne({_id: new ObjectId(request.params.id)})
+    let data = await db.collection(USER_COLLECTION_NAME).findOne({_id: new ObjectId(request.params.id)})
     // since data should only be one object, we check if the object is empty or not
     if(Object.keys(data).length > 0){
         response.json(data);
@@ -37,21 +40,27 @@ userRoutes.route('/users/:id').get(async (request,response) => {
 // route can be same but use different methods (get/post)
 userRoutes.route('/users').post(async (request,response) => {
     let db = database.getDb();
-    // check for taken email
-    const takenEmail = await db.collection("users").findOne({email: request.body.email})
-    if(takenEmail){
-        response.json({message: "Email is taken"})
-    } else{
-        const hash = await bcrypt.hash(request.body.password, SALT)
+
+    try {
+        const takenEmail = await db.collection(USER_COLLECTION_NAME).findOne({ email: request.body.email });
+        if (takenEmail) {
+          return response.json({ success:false, message: "Email is taken" });
+        }
+    
+        const hash = await bcrypt.hash(request.body.password, SALT);
     
         let mongoObject = {
-            name: request.body.name,
-            email: request.body.email,
-            password: hash,
+          name: request.body.name,
+          email: request.body.email,
+          password: hash,
         };
-        let data = await db.collection("users").insertOne(mongoObject);
-        response.json(data);
-    }
+    
+        let data = await db.collection(USER_COLLECTION_NAME).insertOne(mongoObject);
+    
+        return response.json({ success:true, data });
+      } catch (error) {
+        throw error
+      }
 })
 
 // update one
@@ -64,14 +73,14 @@ userRoutes.route('/users/:id').put(async (request,response) => {
             password: request.body.password,
         }
     };
-    let data = await db.collection("users").updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
+    let data = await db.collection(USER_COLLECTION_NAME).updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
     response.json(data);
 })
 
 // delete one
 userRoutes.route('/users/:id').delete(async (request,response) => {
     let db = database.getDb();
-    let data = await db.collection("users").deleteOne({_id: new ObjectId(request.params.id)})
+    let data = await db.collection(USER_COLLECTION_NAME).deleteOne({_id: new ObjectId(request.params.id)})
     response.json(data);
 })
 
@@ -79,21 +88,23 @@ userRoutes.route('/users/:id').delete(async (request,response) => {
 userRoutes.route('/users/login').post(async (request,response) => {
     let db = database.getDb();
     
-    const user = await db.collection("users").findOne({email: request.body.email})
+    const user = await db.collection(USER_COLLECTION_NAME).findOne({email: request.body.email})
     if(user){
         bcrypt.compare(request.body.password, user.password, (err, data) => {
             //if error then throw error
             if (err) throw err
 
             if (data) {
-                response.json({success:true, user})
+                const token = jwt.sign(user, process.env.SECRET_KEY, {expiresIn: '1h'})
+                return response.json({success:true, token})
             } else {
-                response.json({success:false, message: "Incorrect email/password"})
+                return response.json({success:false, message: "Incorrect email/password"})
             }
         })
     }else{
-        response.json({success:false, message: "Account not found"})
+        return response.json({success:false, message: "Account not found"})
     }
 })
+
 
 module.exports = userRoutes;
