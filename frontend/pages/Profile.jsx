@@ -16,7 +16,10 @@ export function Profile() {
     }, [])
 
     return(
-        <div>
+        <div className="w-full h-full bg-red-500 flex flex-col items-center">
+            <div className="w-[100px] h-[100px] rounded-full bg-gray-500 flex items-center justify-center">
+                a
+            </div>
             <p>name: {user.name}</p>
             <p>email: {user.email}</p>
         </div>
