@@ -12,7 +12,9 @@ const USER_COLLECTION_NAME = "users"
 // make CRUD operations:
 // retrieve all
 // http://localhost:3000/users
-userRoutes.route('/users').get(async (request,response) => {
+
+// do verifyToken, if token is verified we run the get function otherwise throw error.
+userRoutes.route('/users').get(verifyToken, async (request,response) => {
     let db = database.getDb();
     let data = await db.collection(USER_COLLECTION_NAME).find({}).toArray();
 
@@ -25,7 +27,7 @@ userRoutes.route('/users').get(async (request,response) => {
 
 // retrieve one
 // http://localhost:3000/users/12345
-userRoutes.route('/users/:id').get(async (request,response) => {
+userRoutes.route('/users/:id').get(verifyToken, async (request,response) => {
     let db = database.getDb();
     let data = await db.collection(USER_COLLECTION_NAME).findOne({_id: new ObjectId(request.params.id)})
     // since data should only be one object, we check if the object is empty or not
@@ -38,7 +40,7 @@ userRoutes.route('/users/:id').get(async (request,response) => {
 
 // create one
 // route can be same but use different methods (get/post)
-userRoutes.route('/users').post(async (request,response) => {
+userRoutes.route('/users').post(verifyToken, async (request,response) => {
     let db = database.getDb();
 
     try {
@@ -64,7 +66,7 @@ userRoutes.route('/users').post(async (request,response) => {
 })
 
 // update one
-userRoutes.route('/users/:id').put(async (request,response) => {
+userRoutes.route('/users/:id').put(verifyToken, async (request,response) => {
     let db = database.getDb();
     let mongoObject = {
         $set: {
@@ -78,7 +80,7 @@ userRoutes.route('/users/:id').put(async (request,response) => {
 })
 
 // delete one
-userRoutes.route('/users/:id').delete(async (request,response) => {
+userRoutes.route('/users/:id').delete(verifyToken, async (request,response) => {
     let db = database.getDb();
     let data = await db.collection(USER_COLLECTION_NAME).deleteOne({_id: new ObjectId(request.params.id)})
     response.json(data);
@@ -106,5 +108,26 @@ userRoutes.route('/users/login').post(async (request,response) => {
     }
 })
 
+// if verified, go to next
+function verifyToken(request, response, next){
+    const authHeader = request.headers['authorization']
+    // authHeader = Bearer 12345
+    // split by ' ' and take the token
+    const token = authHeader && authHeader.split(' ')[1]
+    if(!token){
+        return response.status(401).json({message:'Authentication token is missing!'})
+    }
+    // run the arrow function if verification is successful, error is filled otherwise
+    jwt.verify(token, process.env.SECRET_KEY, (error,user)=>{
+        if(error){
+            return response.status(403).json({message:'Invalid token!'})
+        }
+
+        request.body.user = user
+
+        // proceedto next step
+        next()
+    })
+}
 
 module.exports = userRoutes;
