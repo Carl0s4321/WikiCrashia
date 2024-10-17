@@ -7,7 +7,7 @@ export function FeedMain() {
         try {
             const response = await fetch('http://localhost:3000/twitter/incidents');
             const result = await response.json();
-            setData(result.list);
+            setData(result);
         } catch (error) {
             console.log("Nothing bruh")
         }
