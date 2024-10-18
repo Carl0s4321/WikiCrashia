@@ -3,6 +3,8 @@ import globe from '../../assets/images/globe.svg';
 import { useNavigate } from 'react-router-dom';
 import EarthCanvas from '../Canvas/Earth';
 import StarsCanvas from '../Canvas/Stars';
+// import { motion } from 'framer-motion'
+// import { slideIn, textVariant } from '../../utils/motion';
 
 export function HeroLanding() {
   const navigate = useNavigate();
@@ -28,9 +30,9 @@ export function HeroLanding() {
                 </div>
               </div>
             </div>
-            <div className='relative second-div-hero w-full md:w-6/12 bg-black flex items-center justify-center'>
+            <div className='relative z-0 second-div-hero w-full md:w-6/12 bg-black flex items-center justify-center'>
                 <EarthCanvas/>
-                <StarsCanvas className="z-[0]"/>
+                <StarsCanvas/>
             </div>
         </div>
 
