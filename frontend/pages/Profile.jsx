@@ -76,8 +76,8 @@ export function Profile() {
             <input
               className={`mt-1 p-2 border rounded-md focus:outline-none ${
                 editable
-                  ? "border-gray-300 bg-white"
-                  : "border-gray-300 bg-gray-100"
+                  ? "border-gray bg-white"
+                  : "border-gray bg-gray-100"
               }`}
               disabled={!editable}
               value={user.email}
