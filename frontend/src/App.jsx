@@ -1,4 +1,4 @@
-import { useState} from 'react'
+import { useEffect} from 'react'
 import './App.css'
 import {HashRouter as Router, Routes, Route} from "react-router-dom";
 import { Landing } from '../pages/Landing'
@@ -7,9 +7,9 @@ import { Home } from '../pages/Home';
 import { Profile } from '../pages/Profile';
 import { Layout } from '../components/Layout';
 import { Authentication } from '../pages/Authentication';
+import axios from 'axios';
 
 function App() {
-  const [users, setUsers] = useState();
   
   // useEffect(()=> {
   //   async function loadAllUsers() {
@@ -21,6 +21,13 @@ function App() {
 
   //   loadAllUsers()
   // }, [])
+
+  useEffect(()=>{
+    let token = sessionStorage.getItem("User")
+    if(token){
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
+    }
+  }, [])
 
   return (
     <Router>
