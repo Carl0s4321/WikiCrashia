@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faPencil } from "@fortawesome/free-solid-svg-icons";
 
 export function Profile() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({name: "", email: "" });
   const [editable, setEditable] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -52,7 +52,7 @@ export function Profile() {
       </div>
       <div className="flex flex-col items-center md:items-start">
         <h1 className="font-bold text-3xl">My Profile</h1>
-        <form onSubmit={handleSubmit} className="grid grid-rows-4 md:grid-cols-2 mt-5 gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col mt-5 gap-4">
           <div className="flex flex-col">
             <span>NAME</span>
             <input
@@ -90,9 +90,10 @@ export function Profile() {
             />
           </div>
           {editable && (
-            <button className="m-2 rounded-xl bg-green-400">SAVE</button>
-          )}
+              <button className="m-2 rounded-xl bg-green-400">SAVE</button>
+            )}
         </form>
+            <button>Reset Password</button>
       </div>
     </div>
   );

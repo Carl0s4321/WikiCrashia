@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { pageData } from "./pageData"
 import tempLogo from '../assets/images/templogo.svg'
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 export function Navbar(){
     const navigate = useNavigate()
