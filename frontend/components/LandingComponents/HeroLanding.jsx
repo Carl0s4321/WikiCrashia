@@ -1,6 +1,8 @@
 import './landing.css';
 import globe from '../../assets/images/globe.svg';
 import { useNavigate } from 'react-router-dom';
+import EarthCanvas from '../Canvas/Earth';
+import StarsCanvas from '../Canvas/Stars';
 
 export function HeroLanding() {
   const navigate = useNavigate();
@@ -14,22 +16,21 @@ export function HeroLanding() {
                 <div>
                   <h1 className='font-proximaBold text-7xl sm:text-center md:text-start'>Wiki</h1>
                   <h1 className='font-proximaBold text-7xl sm:text-center md:text-start'>Crashia</h1>
-                  <p className='pt-4'> We believe social media provides a dependable resource for real-time data, as users frequently post about accidents they witness or are involved in, offering an opportunity to respond to incidents faster.</p>
+                  <p className='pt-4'> We believe social media provides a dependable resource for <strong>real-time data</strong>, as users frequently post about <strong>accidents</strong> they witness or are involved in, offering an opportunity to <strong>respond to incidents faster</strong>.</p>
                 </div>
                 <div className='flex flex-row sm:justify-center md:justify-start space-x-3 justify-start'>
                   <button className='button-hero' onClick={()=>{navigate("auth")}} >
-                    View Map
+                    Get Started
                   </button>
-                  <button className='button-hero2' onClick={()=>{navigate("feeds")}}>
+                  {/* <button className='button-hero2' onClick={()=>{navigate("feeds")}}>
                     View Feeds 
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
             <div className='relative second-div-hero w-full md:w-6/12 bg-black flex items-center justify-center'>
-              <div>
-                <img src={globe} alt="Globe" className="max-w-full max-h-full object-contain animate-spin-horizontal" />
-              </div>
+                <EarthCanvas/>
+                <StarsCanvas className="z-[0]"/>
             </div>
         </div>
 
