@@ -68,15 +68,36 @@ userRoutes.route('/users').post(verifyToken, async (request,response) => {
 // update one
 userRoutes.route('/users/:id').put(verifyToken, async (request,response) => {
     let db = database.getDb();
-    let mongoObject = {
-        $set: {
-            name: request.body.name,
-            email: request.body.email,
-            password: request.body.password,
-        }
+    let updatedUserInfo = {
+        name: request.body.name,
+        email: request.body.email,
+        password: request.body.password,
     };
+
+    let mongoObject = { $set: updatedUserInfo };
     let data = await db.collection(USER_COLLECTION_NAME).updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
-    response.json(data);
+
+    if (data.modifiedCount > 0) {
+        // generate new token with updated user info
+        const tokenPayload = {
+            _id: request.params.id,
+            name: updatedUserInfo.name,
+            email: updatedUserInfo.email,
+            password: request.body.password,
+        };
+        const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, { expiresIn: '24h' });
+        
+        return response.json({
+            success: true,
+            message: 'User updated successfully',
+            token: token,
+        });
+    } else {
+        return response.status(400).json({
+            success: false,
+            message: 'Failed to update user',
+        });
+    }
 })
 
 // delete one
@@ -97,7 +118,7 @@ userRoutes.route('/users/login').post(async (request,response) => {
             if (err) throw err
 
             if (data) {
-                const token = jwt.sign(user, process.env.SECRET_KEY, {expiresIn: '1h'})
+                const token = jwt.sign(user, process.env.SECRET_KEY, {expiresIn: '24h'})
                 return response.json({success:true, token})
             } else {
                 return response.json({success:false, message: "Incorrect email/password"})
