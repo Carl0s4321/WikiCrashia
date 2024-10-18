@@ -4,12 +4,10 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 
 export function Layout() {
-    // let user = sessionStorage.getItem("User")
     let user = sessionStorage.getItem("User")
     const navigate = useNavigate()
 
     useEffect(()=>{
-        console.log('once') 
         if(!user){
             navigate("/")
         }
@@ -18,7 +16,9 @@ export function Layout() {
     return(
         <>
             <Navbar/>
-            <Outlet/>
+            <div className="m-5 mx-10 md:mx-20">
+                <Outlet/>
+            </div>
         </>
     )
 }

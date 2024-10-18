@@ -7,6 +7,7 @@ export function Navbar(){
     const navigate = useNavigate()
     function handleLogout(){
         sessionStorage.removeItem("User")
+        delete axios.defaults.headers.common["Authorization"];
         navigate("/")
     }
 
