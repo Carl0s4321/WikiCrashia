@@ -1,9 +1,10 @@
-import { updateUser } from "../src/api";
+import { updateUser, deleteUser} from "../src/api";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faPencil } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 export function Profile() {
   const [user, setUser] = useState({name: "", email: "" });
@@ -21,7 +22,13 @@ export function Profile() {
   function handleChange(e) {
     setUser({ ...user, [e.target.name]: e.target.value });
   }
-//   console.log(user)
+
+  function handleDelete(){
+    const response = deleteUser(user._id)
+    sessionStorage.removeItem("User")
+    delete axios.defaults.headers.common["Authorization"];
+    navigate("/")
+  }
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -90,10 +97,11 @@ export function Profile() {
             />
           </div>
           {editable && (
-              <button className="m-2 rounded-xl bg-green-400">SAVE</button>
+              <button className="p-2 rounded-xl bg-green-400">SAVE</button>
             )}
         </form>
             <button>Reset Password</button>
+            <button onClick={handleDelete} className="p-2 bg-red-800 rounded-xl">Delete Account</button>
       </div>
     </div>
   );
