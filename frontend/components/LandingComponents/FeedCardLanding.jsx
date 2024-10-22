@@ -1,5 +1,4 @@
 import './landing.css';
-import person1 from '../../assets/images/person1.svg';
 
 export function FeedCardLanding(props) {
   const {img, username, userAt, post, time, date} = props;
@@ -18,9 +17,7 @@ export function FeedCardLanding(props) {
           <p alt='time'>{time}</p>
           <p>·</p>
           <p alt='date'>{date}</p>
-        </div>
-
-        
+        </div>      
       </div>
     </>
   );

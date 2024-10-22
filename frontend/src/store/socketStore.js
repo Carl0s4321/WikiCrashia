@@ -15,7 +15,7 @@ export const socketStore = create((set, get) => ({
             set({ isConnected: true })
         });
 
-        newSocket.on('disconnect', (reason) => {
+        newSocket.on('disconnect', () => {
             set({ isConnected: false })
         });
 

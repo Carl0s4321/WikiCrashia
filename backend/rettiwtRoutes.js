@@ -34,6 +34,32 @@ async function extractAddress(text) {
     }
 }
 
+function convertUTCToMountain(time) {
+    const utcDate = new Date(time);
+
+    timeConfig = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    }
+
+    timeConfig2 = {
+        hour: 'numeric',
+        minute: '2-digit'
+    }
+
+    const localDate = utcDate.toLocaleString(undefined, timeConfig);
+
+    const localTime = utcDate.toLocaleString(undefined, timeConfig2);
+
+    return {localDate, localTime};
+
+}
+
+function getHighQualImageUrl(urlLink) {
+    return urlLink.replace('_normal', '');
+}
+
 // Could add more words for more filtering
 const KEYWORDS = [
     'car crash', 'car accident', 'road closure',
@@ -44,21 +70,34 @@ const KEYWORDS = [
 rettiwtRoutes.get('/twitter/incidents', async (req, res) => {
     try {
         const tweets = await rettiwt.tweet.search({
-            fromUsers: ['@yyctransport'],
-            words: KEYWORDS,
-            limit: 50,
+            hashtags:["yyctraffic"],
+            excludeWords: ["CLEAR", "Update"],
+            startDate: new Date("2024-9-1 23:59:00"), 
+            count: 50,
             sortBy: 'latest'
         });
         
-        const tweetsList = tweets.list;
+        let tweetsList = tweets.list;
+        if (tweetsList.length == 0) {
+            console.log("Nothing found.")
+        }
+
+        tweetsList = tweetsList.map((tweet) => {
+            const {localDate, localTime} = convertUTCToMountain(tweet.createdAt);
+            const profilePic = getHighQualImageUrl(tweet.tweetBy.profileImage);
+            return {...tweet, localDate, localTime, profilePic};
+        })
         
+
+        /*
         // Basically adding the address to the object returned.
         const addressTweets = await Promise.all(tweetsList.map(async (tweet) => {
             const address = await extractAddress(tweet.fullText);
             return {...tweet, address};
         }));
-
-        res.json(addressTweets);
+        */
+        
+        res.json(tweetsList);
 
     } catch (error) {
         console.error("Error in /twitter/incidents route:", error);

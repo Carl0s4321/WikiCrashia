@@ -1,0 +1,22 @@
+.top-buttons {
+    height: 50px;
+}
+
+.top-buttons-selected {
+    height:50px;
+    text-decoration: underline;
+    text-underline-offset: 15px;
+    text-decoration-thickness: 3px;
+}
+
+
+.top-buttons-div:hover, .filter-button-selected {
+    background-color: rgb(234, 234, 234);
+}
+
+
+.filter-button, .filter-button-selected {
+    height: 40px;
+}
+
+
