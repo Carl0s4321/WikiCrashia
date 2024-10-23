@@ -7,7 +7,7 @@ export function FeedMain() {
   const [forYou, setForYou] = useState("forYou");
   const [hashTagFilter, setHashTagFilter] = useState();
   const [severityFilter, setSeverityFilter] = useState();
-  const [hashtags, setHashtags] = useState([]);
+  const [hashtags, setHashtags] = useState({});
 
   const fetchData = async () => {
     try {
@@ -19,13 +19,25 @@ export function FeedMain() {
     }
   }
 
+  const toggleHashtagFilter = (tag) => {
+    setHashTagFilter(currentTag => currentTag === tag ? null : tag);
+  }
+  
+  const toggleSeverityFilter = (severity) => {
+    setSeverityFilter(currentSeverity => currentSeverity === severity ? null : severity);
+  }
+
+
   useEffect(() => {
-    const newHashtags = [...hashtags];
+    let newHashtags = {};
     data.forEach((tweet) => {
       const tagsArray = tweet.entities.hashtags;
       for (let index = 0; index < tagsArray.length; index++) {
-        if (!newHashtags.includes(tagsArray[index])) {
-          newHashtags.push(tagsArray[index]);
+        if (!newHashtags.hasOwnProperty(tagsArray[index])) {
+          newHashtags[tagsArray[index]] = {tag: tagsArray[index], count: 1};
+        }
+        else {
+          newHashtags[tagsArray[index]].count += 1;
         }
       }
     });
@@ -90,44 +102,47 @@ export function FeedMain() {
         </div>
 
         <div className='hidden lg:block lg:col-span-3 px-4'>
-
           <div className='flex flex-col space-y-4 sticky top-4 px-4'>
-            <div className='flex flex-col space-y-2 border border-inherit py-2 rounded-xl'>
-              <p className='font-proximaBold text-xl  px-4'>Hashtags</p>
-              {hashtags.map((tag, index) => ((
+            <div className='flex flex-col border border-inherit py-2 rounded-xl'>
+              <p className='font-proximaBold text-xl px-4'>Hashtags</p>
+              {Object.entries(hashtags).map(([key, value]) => ((
                 <>
-                  <div className={`flex align-center ${hashTagFilter === tag ? 'filter-button-selected' : 'filter-button'}`}>
-                    <button
-                      className={`text-start w-full px-4`}
-                      onClick={() => setHashTagFilter(tag)}
-
-                    >#{tag}</button>
+                  <div className={`flex flex-col justify-center px-4 py-6 ${hashTagFilter === value.tag ? 'filter-button-selected' : 'filter-button'}`}>
+                    <div>
+                      <button
+                        className={`text-start w-full font-semibold`}
+                        onClick={() => toggleHashtagFilter(value.tag)}
+                      >#{value.tag}</button>
+                    </div>
+                    <p className='text-xs text-inherit'>{value.count} {value.count > 1 ? 'posts' : 'post'}</p>
                   </div>
                 </>
               )))}
+            
+
             </div>
 
-            <div className='flex flex-col space-y-2 border border-inherit py-2 rounded-xl'>
+            <div className='flex flex-col border border-inherit py-2 rounded-xl'>
               <p className='font-proximaBold text-xl  px-4'>Severity</p>
               <div>
                 <button
                   className={`w-full text-start px-4
                 ${severityFilter === "Low" ? 'filter-button-selected' : 'filter-button'}`}
-                  onClick={() => setSeverityFilter("Low")}
+                  onClick={() => toggleSeverityFilter("Low")}
                 >Low</button>
               </div>
               <div>
                 <button
                   className={`w-full text-start px-4
                 ${severityFilter === "Medium" ? 'filter-button-selected' : 'filter-button'}`}
-                  onClick={() => setSeverityFilter("Medium")}
+                  onClick={() => toggleSeverityFilter("Medium")}
                 >Medium</button>
               </div>
               <div>
                 <button
                   className={`w-full text-start px-4
                 ${severityFilter === "High" ? 'filter-button-selected' : 'filter-button'}`}
-                  onClick={() => setSeverityFilter("High")}
+                  onClick={() => toggleSeverityFilter("High")}
                 >High</button>
               </div>
               <div>

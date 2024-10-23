@@ -1,14 +1,20 @@
+import { HomeIcon, ProfileIcon, FeedsIcon } from './NavIconSvgs';
+
 export const pageData = [
     {
         name: "Home",
-        path: "/home",   
+        path: "/home",
+        icon: HomeIcon,
     },
     {
         name: "Profile",
-        path: "/profile",   
+        path: "/profile",
+        icon: ProfileIcon,
     },
     {
         name: "Feeds",
-        path: "/feeds",   
+        path: "/feeds",
+        icon: FeedsIcon,
+        
     },
 ]
