@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "socket.io": "^4.8.0"
   },
   "scripts": {
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
@@ -8,4 +9,3 @@
     "start:frontend": "cd frontend && npm run dev"
   }
 }
-
