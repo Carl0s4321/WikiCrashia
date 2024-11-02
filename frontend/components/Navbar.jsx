@@ -59,7 +59,7 @@ export function Navbar() {
         return (
           <div className={`flex flex-col space-y-4 justify-center items-center ${isActive ? '-translate-y-1 transition' : ""}`}>
             <Link to={page.path} key={page.path}>
-              <page.icon size={40} isActive={isActive} />
+              <page.icon size={30} isActive={isActive} />
             </Link>
 
             {isActive &&
