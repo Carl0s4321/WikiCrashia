@@ -6,6 +6,14 @@ export default {
         "./components/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
+        // colors:{
+        //     lightBlue: '#A3CEF1',
+        //     blue: '#00A6FB',
+        //     darkBlue: '#274C77',
+        //     white: '#E7ECEF',
+        //     gray: '#8B8C89',
+        //     black: '#121212',
+        // },
         extend: {
             fontFamily: {
                 'proxima': ['proxima_reg', 'sans-serif'],
@@ -25,7 +33,7 @@ export default {
                 '1000': '1000px',
             },
         },
-    },
+    },  
     plugins: [],
 }
 

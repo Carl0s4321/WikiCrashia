@@ -40,7 +40,7 @@ userRoutes.route('/users/:id').get(verifyToken, async (request,response) => {
 
 // create one
 // route can be same but use different methods (get/post)
-userRoutes.route('/users').post(verifyToken, async (request,response) => {
+userRoutes.route('/users').post(async (request,response) => {
     let db = database.getDb();
 
     try {
@@ -58,8 +58,16 @@ userRoutes.route('/users').post(verifyToken, async (request,response) => {
         };
     
         let data = await db.collection(USER_COLLECTION_NAME).insertOne(mongoObject);
+
+        // console.log("DATA IN ROUTES:, ", data)
+
+        const token = jwt.sign(mongoObject, process.env.SECRET_KEY, { expiresIn: '24h' });
     
-        return response.json({ success:true, data });
+        return response.json({
+            success: true,
+            message: 'User created successfully',
+            token: token,
+        });
       } catch (error) {
         throw error
       }
