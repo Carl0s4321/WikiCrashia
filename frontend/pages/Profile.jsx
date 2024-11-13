@@ -42,66 +42,65 @@ export function Profile() {
   }
 
   return (
-    <div className="p-10 bg-red-500 flex flex-col md:flex-row justify-center items-center md:items-start gap-x-20">
-      <div className="flex flex-col gap-y-3 items-center mb-4 md:mb-0">
-        <div className="w-[150px] h-[150px] rounded-full bg-gray-500 flex items-center justify-center">
-          <FontAwesomeIcon icon={faUser} className="text-6xl text-gray-700" />
+    <div className="p-10 bg-gray-100 min-h-screen relative">
+      <div className="absolute top-6 left-6 flex flex-col items-center gap-y-3">
+        <div className="w-[150px] h-[150px] rounded-full bg-gray-300 flex items-center justify-center">
+          <FontAwesomeIcon icon={faUser} className="text-6xl text-gray-600" />
         </div>
         <div
-          onClick={() => {
-            setEditable(!editable);
-          }}
-          className="flex flex-row items-center gap-x-2 cursor-pointer"
+          onClick={() => setEditable(!editable)}
+          className="flex flex-row items-center gap-x-2 cursor-pointer text-gray-600"
         >
           <FontAwesomeIcon icon={faPencil} />
           <span>Edit</span>
         </div>
       </div>
-      <div className="flex flex-col items-center md:items-start">
-        <h1 className="font-bold text-3xl">My Profile</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col mt-5 gap-4">
-          <div className="flex flex-col">
-            <span>NAME</span>
+
+      <div className="flex flex-col items-center max-w-md mx-auto">
+        <h1 className="font-bold text-3xl text-gray-800 mb-4">My Profile</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center mt-5 gap-4 w-full">
+          <div className="flex flex-col items-center w-full">
+            <span className="text-gray-700">NAME</span>
             <input
-              className={`mt-1 p-2 border rounded-md focus:outline-none ${
-                editable
-                  ? "border-gray-300 bg-white"
-                  : "border-gray-300 bg-gray-100"
+              className={`mt-1 p-2 border rounded-md focus:outline-none w-full max-w-[240px] ${
+                editable ? "border-gray-400 bg-white" : "border-gray-200 bg-gray-100"
               }`}
               disabled={!editable}
               value={user.name}
               name="name"
-              onChange={(e)=>{
-                handleChange(e);
-              }}
+              onChange={handleChange}
               required
               type="text"
             />
           </div>
-          <div className="flex flex-col">
-            <span>EMAIL</span>
+          <div className="flex flex-col items-center w-full">
+            <span className="text-gray-700">EMAIL</span>
             <input
-              className={`mt-1 p-2 border rounded-md focus:outline-none ${
-                editable
-                  ? "border-gray bg-white"
-                  : "border-gray bg-gray-100"
+              className={`mt-1 p-2 border rounded-md focus:outline-none w-full max-w-[240px] ${
+                editable ? "border-gray-400 bg-white" : "border-gray-200 bg-gray-100"
               }`}
               disabled={!editable}
               value={user.email}
               name="email"
-              onChange={(e)=>{
-                handleChange(e);
-              }}
+              onChange={handleChange}
               required
               type="email"
             />
           </div>
           {editable && (
-              <button className="p-2 rounded-xl bg-green-400">SAVE</button>
-            )}
+            <button className="p-2 rounded-xl bg-green-500 text-white hover:bg-green-600 mt-2 w-full max-w-[240px]">
+              SAVE
+            </button>
+          )}
         </form>
-            <button>Reset Password</button>
-            <button onClick={handleDelete} className="p-2 bg-red-800 rounded-xl">Delete Account</button>
+        <button className="mt-4 p-2 rounded-xl bg-green-300 text-black hover:underline w-full max-w-[240px]">
+          Reset Password
+        </button>
+        <button 
+          onClick={handleDelete} 
+          className="p-2 mt-4 bg-red-600 rounded-xl text-white w-full max-w-[240px]">
+          Delete Account
+        </button>
       </div>
     </div>
   );
