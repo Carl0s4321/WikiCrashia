@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createUser } from "../src/api";
 import { useNavigate } from "react-router-dom";
 import {useUserStore} from '../src/store/userStore'
+import axios from "axios";
 
 export function CreateUser() {
   const navigate = useNavigate();
@@ -19,8 +20,11 @@ export function CreateUser() {
 
     try{
       let response = await createUser(user);
+      console.log(response)
       
       if(response.data.success){
+        sessionStorage.setItem("User", response.data.token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
         navigate("/home");
       }else{
         setPassError(true);
