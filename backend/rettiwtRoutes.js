@@ -1,9 +1,12 @@
 const express = require('express');
 const { Rettiwt } = require('rettiwt-api');
+const { Client } = require('@googlemaps/google-maps-services-js');
 require("dotenv").config({path:"./config.env"})
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
 
 const rettiwtRoutes = express.Router();
+
+const googleMapsClient = new Client({});
 
 const rettiwt = new Rettiwt({ apiKey: process.env.RETTIWT_API_KEY });
 
@@ -20,7 +23,8 @@ const safetySettings = [
 async function extractAddress(text) {
     const model = genAI.getGenerativeModel({model: "gemini-1.5-flash", safetySettings: safetySettings});
 
-    const prompt = `Identify the address mentioned in the following text: "${text}" When you respond, just state the address.`;
+    const prompt = `Identify the address mentioned in the following text: "${text}" When you respond, just state the address.
+    And also format the address so it can be searched in google maps to geolocate its latitude and longitude.`;
 
     try {
         const result = await model.generateContent(prompt);
@@ -33,6 +37,34 @@ async function extractAddress(text) {
         return null;
     }
 }
+
+async function getGeocode(address) {
+    if (!address) return null;
+    
+    try {
+        const response = await googleMapsClient.geocode({
+            params: {
+                address: address,
+                key: process.env.GOOGLE_MAPS_API_KEY,
+                region: "ca"
+            }
+        });
+
+        if (response.data.results && response.data.results.length > 0) {
+            const location = response.data.results[0].geometry.location;
+            return {
+                lat: location.lat,
+                lng: location.lng,
+                formattedAddress: response.data.results[0].formatted_address
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error("Didn't get anything from it?:", error);
+        return null;
+    }
+}
+
 
 function convertUTCToMountain(time) {
     const utcDate = new Date(time);
@@ -88,16 +120,15 @@ rettiwtRoutes.get('/twitter/incidents', async (req, res) => {
             return {...tweet, localDate, localTime, profilePic};
         })
         
-
-        /*
         // Basically adding the address to the object returned.
         const addressTweets = await Promise.all(tweetsList.map(async (tweet) => {
             const address = await extractAddress(tweet.fullText);
-            return {...tweet, address};
+            const coords = await getGeocode(address);
+            return {...tweet, address, location: coords};
         }));
-        */
+
         
-        res.json(tweetsList);
+        res.json(addressTweets);
 
     } catch (error) {
         console.error("Error in /twitter/incidents route:", error);
