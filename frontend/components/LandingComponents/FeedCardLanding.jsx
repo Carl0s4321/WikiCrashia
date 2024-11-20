@@ -1,5 +1,4 @@
 import './landing.css';
-import person1 from '../../assets/images/person1.svg';
 
 export function FeedCardLanding(props) {
   const {img, username, userAt, post, time, date} = props;
@@ -10,7 +9,7 @@ export function FeedCardLanding(props) {
           <img className='sm:w-14 sm:h-14 md:w-20 md:h-20 rounded-full' src={img}/>
           <div className='flex flex-col items-start'>
             <h1 className='sm:text-lg md:text-4xl'>{username}</h1>
-            <p1 className='sm:text-lg md:text-4xl text-gray-500'>@{userAt}</p1>
+            <p className='sm:text-lg md:text-4xl text-gray-500'>@{userAt}</p>
           </div>
         </div>
         <h1 className='sm:text-xl md:text-5xl'>{post}</h1>
@@ -18,9 +17,7 @@ export function FeedCardLanding(props) {
           <p alt='time'>{time}</p>
           <p>·</p>
           <p alt='date'>{date}</p>
-        </div>
-
-        
+        </div>      
       </div>
     </>
   );
