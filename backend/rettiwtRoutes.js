@@ -8,7 +8,7 @@ const rettiwtRoutes = express.Router();
 
 const googleMapsClient = new Client({});
 
-const rettiwt = new Rettiwt({ apiKey: process.env.RETTIWT_API_KEY });
+const rettiwt = new Rettiwt({ apiKey: process.env.RETTIWT_API_KEY});
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
@@ -23,20 +23,26 @@ const safetySettings = [
 async function extractAddress(text) {
     const model = genAI.getGenerativeModel({model: "gemini-1.5-flash", safetySettings: safetySettings});
 
-    const prompt = `Identify the address mentioned in the following text: "${text}" When you respond, just state the address.
-    And also format the address so it can be searched in google maps to geolocate its latitude and longitude.`;
+    const prompt = `Identify the address mentioned in the following text. The scope of the address is inside the city of Calgary, Alberta, Canada: "${text}" When you respond, just state the address.
+    And also format the address so it can be searched in google maps to geolocate its latitude and longitude and if no address is found just say 'null'`;
 
     try {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const responseText = response.text().trim();
         console.log(responseText);
+        if(responseText === 'null') return null;
         return responseText;
     } catch (error) {
         console.error("Error extracting address:", error);
         return null;
     }
 }
+
+const calgaryBounds = {
+    northeast: { lat: 51.2130, lng: -113.3064 },  // NE corner
+    southwest: { lat: 50.8000, lng: -114.0714 }   // SW corner
+  };
 
 async function getGeocode(address) {
     if (!address) return null;
@@ -46,6 +52,7 @@ async function getGeocode(address) {
             params: {
                 address: address,
                 key: process.env.GOOGLE_MAPS_API_KEY,
+                bounds: `${calgaryBounds.southwest.lat},${calgaryBounds.southwest.lng}|${calgaryBounds.northeast.lat},${calgaryBounds.northeast.lng}`, 
                 region: "ca"
             }
         });
@@ -94,7 +101,7 @@ function getHighQualImageUrl(urlLink) {
 
 // Could add more words for more filtering
 const KEYWORDS = [
-    'car crash', 'car accident', 'road closure',
+    'car crash', 'car accident', 'road closure', 'closure',
     'traffic alert', 'road blockage', 'car pileup', 'traffic delay',
     'closure', 'injury', 'road traffic', 'motorcyclist', 'highway', 'accident'
 ]
@@ -102,12 +109,12 @@ const KEYWORDS = [
 rettiwtRoutes.get('/twitter/incidents', async (req, res) => {
     try {
         const tweets = await rettiwt.tweet.search({
-            hashtags:["yyctraffic"],
+            hashtags:["yyctraffic", "yycroads"],
             excludeWords: ["CLEAR", "Update"],
-            startDate: new Date("2024-9-1 23:59:00"), 
-            count: 50,
-            sortBy: 'latest'
+            startDate: new Date("2024-11-16 23:59:00"), 
         });
+
+        // console.log(tweets)
         
         let tweetsList = tweets.list;
         if (tweetsList.length == 0) {
@@ -123,12 +130,14 @@ rettiwtRoutes.get('/twitter/incidents', async (req, res) => {
         // Basically adding the address to the object returned.
         const addressTweets = await Promise.all(tweetsList.map(async (tweet) => {
             const address = await extractAddress(tweet.fullText);
+            if(!address) return null // IF NO ADDRESS REMOVE THE TWEET
             const coords = await getGeocode(address);
+            if(!coords) return null // IF NO COORDINATE REMOVE THE TWEET
             return {...tweet, address, location: coords};
         }));
 
         
-        res.json(addressTweets);
+        res.status(200).json(addressTweets);
 
     } catch (error) {
         console.error("Error in /twitter/incidents route:", error);
