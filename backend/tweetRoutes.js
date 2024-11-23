@@ -1,18 +1,108 @@
-// const express = require('express');
-// const database = require('./connect');
-// const ObjectId = require('mongodb').ObjectId;
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// require("dotenv").config({path: "./config.env"})
+const express = require('express');
+const database = require('./connect');
+const ObjectId = require('mongodb').ObjectId;
+require("dotenv").config({path: "./config.env"})
+const error = require('./util')
 
-// let userRoutes = express.Router();
-// const SALT = 6;
-// const TWEET_COLLECTION_NAME = "tweets"
+let tweetRoutes = express.Router();
+const TWEET_COLLECTION_NAME = "tweets"
+const CRASH_COLLECTION_NAME = "crashes"
+
+async function clearColl(db){
+    try{
+        const deleteAll = await db.collection(CRASH_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('673e7b0f654b2c6b54a85172')}})
+        const deleteAll2 = await db.collection(TWEET_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('6700b50bb2c1f5a21ddf086d')}})
+    }catch(e){
+        throw e
+    }
+}
+
+// INSERT BATCH
+tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
+
+
+
+
+    const tweets = req.body.tweets
+    const db = database.getDb();
+
+
+    //  dangerous
+    // clearColl(db)
+
+
+    try{
+        let bulkOps = []
+        
+        for(let tweet of tweets){
+            // console.log('CURRENT TWEET**********************************\n', tweet)
+
+            let crashId = ''
+            
+            const crash = await db.collection(CRASH_COLLECTION_NAME).findOne({'location.formattedAddress': tweet.location.formattedAddress})
+
+            if(!crash){
+                const newCrash = {
+                    location: {
+                        actualAddress: tweet.address,
+                        formattedAddress: tweet.location.formattedAddress,
+                        lat: tweet.location.lat,
+                        lng: tweet.location.lng,
+                    },
+                    date: tweet.localDate,
+                    time: tweet.localTime,
+                }
+                const crashResult = await db.collection('crashes').insertOne(newCrash);
+                crashId = crashResult.insertedId;
+            }else{
+                crashId = crash._id
+                console.log('CRASH FOUND: ', tweet.location.formattedAddress, " CRASH ID: ", crashId)
+            }
+
+            const existTweet = await db.collection(TWEET_COLLECTION_NAME).findOne({tweet_id: tweet.id})
+
+            if(!existTweet){
+                bulkOps.push({
+                    insertOne: {
+                        document: {
+                            tweet_id: tweet.id,
+                            author_username: tweet.tweetBy.userName,
+                            author_name: tweet.tweetBy.fullName,
+                            text: tweet.fullText,
+                            crash_id: crashId,
+                            date: tweet.localDate,
+                            time: tweet.localTime,
+                            profilePic: tweet.profilePic,
+                        }
+                    }
+                })
+            } else{
+                console.log('TWEET EXIST: ', tweet.id)
+            }
+
+
+        }
+
+        if(bulkOps.length > 0){
+            const result = await db.collection(TWEET_COLLECTION_NAME).bulkWrite(bulkOps)
+            console.log(`Bulk insert successful: ${result.insertedCount} tweets inserted.`);
+            res.status(200).json({ message: `${result.insertedCount} tweets processed successfully` });
+        }else {
+            error('No valid tweets to insert.', 404)
+          }
+
+    }catch(error){
+        console.error(error.message)
+        res.status(error.status).json(error)
+    }
+})
+
+
 
 // // make CRUD operations:
 // // retrieve all
 // // http://localhost:3000/tweets
-// userRoutes.route('/tweets').get(async (request,response) => {
+// tweetRoutes.route('/tweets').get(async (request,response) => {
 //     let db = database.getDb();
 //     let data = await db.collection(TWEET_COLLECTION_NAME).find({}).toArray();
 
@@ -23,9 +113,9 @@
 //     }
 // })
 
-// retrieve one
-// http://localhost:3000/tweets/12345
-// userRoutes.route('/tweets/:id').get(async (request,response) => {
+// // retrieve one
+// // http://localhost:3000/tweets/12345
+// tweetRoutes.route('/tweets/:id').get(async (request,response) => {
 //     let db = database.getDb();
 //     let data = await db.collection(TWEET_COLLECTION_NAME).findOne({_id: new ObjectId(request.params.id)})
 //     // since data should only be one object, we check if the object is empty or not
@@ -36,35 +126,10 @@
 //     }
 // })
 
-// create one
-// route can be same but use different methods (get/post)
-// userRoutes.route('/tweets').post(async (request,response) => {
-//     let db = database.getDb();
 
-//     try {
-//         const takenEmail = await db.collection(TWEET_COLLECTION_NAME).findOne({ email: request.body.email });
-//         if (takenEmail) {
-//           return response.json({ success:false, message: "Email is taken" });
-//         }
-    
-//         const hash = await bcrypt.hash(request.body.password, SALT);
-    
-//         let mongoObject = {
-//           name: request.body.name,
-//           email: request.body.email,
-//           password: hash,
-//         };
-    
-//         let data = await db.collection(TWEET_COLLECTION_NAME).insertOne(mongoObject);
-    
-//         return response.json({ success:true, data });
-//       } catch (error) {
-//         throw error
-//       }
-// })
 
 // // update one
-// userRoutes.route('/tweets/:id').put(async (request,response) => {
+// tweetRoutes.route('/tweets/:id').put(async (request,response) => {
 //     let db = database.getDb();
 //     let mongoObject = {
 //         $set: {
@@ -78,11 +143,12 @@
 // })
 
 // delete one
-// userRoutes.route('/tweets/:id').delete(async (request,response) => {
+// tweetRoutes.route('/tweets/:id').delete(async (request,response) => {
 //     let db = database.getDb();
 //     let data = await db.collection(TWEET_COLLECTION_NAME).deleteOne({_id: new ObjectId(request.params.id)})
 //     response.json(data);
 // })
 
 
-// module.exports = userRoutes;
+
+module.exports = tweetRoutes;
