@@ -57,8 +57,11 @@ export function Navbar() {
         const isActive = location.pathname === page.path;
 
         return (
-          <div className={`flex flex-col space-y-4 justify-center items-center ${isActive ? '-translate-y-1 transition' : ""}`}>
-            <Link to={page.path} key={page.path}>
+          <div
+            key={page.path} // Move the key prop here
+            className={`flex flex-col space-y-4 justify-center items-center ${isActive ? '-translate-y-1 transition' : ""}`}
+          >
+            <Link to={page.path}>
               <page.icon size={30} isActive={isActive} />
             </Link>
 
@@ -71,13 +74,17 @@ export function Navbar() {
                 }}>
                   {page.name}
                 </div>
-                
               </>
             }
           </div>
-
-        )
+        );
       })}
+
+      <Link to="/statistics">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Statistics
+        </button>
+      </Link>
       <button onClick={handleLogout}>
         <LogoutIcon size={40} />
       </button>
