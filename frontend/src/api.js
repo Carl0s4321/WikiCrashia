@@ -39,3 +39,12 @@ export async function loginUser(user){
     return response
 
 }
+
+export async function processTweetBatch(tweets) {
+    const response = await axios.post(`${URL}/tweets/bulk`, { tweets }, {
+        headers: {
+            'Content-Type': 'application/json', 
+        }
+    });
+    return response
+}

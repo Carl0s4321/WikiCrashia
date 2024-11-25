@@ -88,19 +88,11 @@ export function Profile() {
             />
           </div>
           {editable && (
-            <button className="p-2 rounded-xl bg-green-500 text-white hover:bg-green-600 mt-2 w-full max-w-[240px]">
-              SAVE
-            </button>
-          )}
+              <button className="p-2 rounded-xl bg-green-400">SAVE</button>
+            )}
         </form>
-        <button className="mt-4 p-2 rounded-xl bg-green-300 text-black hover:underline w-full max-w-[240px]">
-          Reset Password
-        </button>
-        <button 
-          onClick={handleDelete} 
-          className="p-2 mt-4 bg-red-600 rounded-xl text-white w-full max-w-[240px]">
-          Delete Account
-        </button>
+            <button>Reset Password</button>
+            <button onClick={handleDelete} className="p-2 bg-red-800 rounded-xl">Delete Account</button>
       </div>
     </div>
   );

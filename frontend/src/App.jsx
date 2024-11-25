@@ -9,6 +9,7 @@ import { Layout } from '../components/Layout';
 import { Authentication } from '../pages/Authentication';
 import { socketStore } from './store/socketStore';
 import axios from 'axios';
+import { Statistics } from "../pages/Statistics"; 
 
 function App() {
 
@@ -40,10 +41,10 @@ function App() {
 
   return (
     <Router>
-      {/* {JSON.stringify(users)} */}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path='auth' element={<Authentication />} />
+        <Route path="/statistics" element={<Statistics />} /> 
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
