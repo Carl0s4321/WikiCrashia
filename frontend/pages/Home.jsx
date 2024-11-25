@@ -1,59 +1,89 @@
-import {jwtDecode} from "jwt-decode";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
     APIProvider, 
     Map, 
     AdvancedMarker, 
     Pin, 
     InfoWindow,
-    // MapCameraChangedEvent
-
 } from "@vis.gl/react-google-maps";
-export function Home() {
-    const position = {lat : 51.049999, lng: -114.066666};
-    const [open, setOpen] = useState(false);
 
-    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+export function Home() {
+    const [crashes, setCrashes] = useState([]); 
+    const [selectedCrash, setSelectedCrash] = useState(null); 
+
+    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     const mapID = import.meta.env.VITE_MAP_ID;
 
+    useEffect(() => {
+        async function fetchCrashData() {
+            try {
+                const response = await fetch('http://localhost:3000/crashes');
+                const data = await response.json();
+                console.log("Fetched crash data:", data); 
+                setCrashes(data); 
+            } catch (error) {
+                console.error("Error fetching crash data:", error);
+            }
+        }
 
-       
-    return(
-        <APIProvider apiKey={googleMapsApiKey} onLoad={() => console.log('Maps API has loaded.')}>           <div className="font-proxima" style={{height: "100vh", width:"100%"}}>
-                Home test font
-                <Map 
-                    defaultZoom= {12} 
-                    defaultCenter ={position} 
+        fetchCrashData();
+    }, []);
+
+    return (
+        <APIProvider apiKey={googleMapsApiKey}>
+            <div className="font-proxima" style={{ height: "100vh", width: "100%" }}>
+                <Map
+                    defaultZoom={9}
+                    defaultCenter={{ lat: 51.049999, lng: -114.066666 }}
                     mapId={mapID}
-                    options= {{
+                    options={{
                         draggable: true,
                         scrollwheel: true,
-                        zoomControl: true, 
-                        disableDoubleClickZoom: false
+                        zoomControl: true,
+                        disableDoubleClickZoom: false,
                     }}
-                    >
-                    <AdvancedMarker position = {position} onClick={() => setOpen(true)}>
-                        <Pin 
-                            background= {"red"}
-                            borderColor= {"grey"}
-                            glyphColor= {"purple"}
-                        />                
-                    </AdvancedMarker>
-                </Map>
+                >
+                    {crashes.map((crash) => {
+                        const { location } = crash;
 
+                        // Validate location object
+                        if (!location || typeof location.lat !== "number" || typeof location.lng !== "number") {
+                            console.error("Invalid crash data:", crash);
+                            return null; // Skip invalid markers
+                        }
+
+                        return (
+                            <AdvancedMarker
+                                key={crash._id}
+                                position={{ lat: location.lat, lng: location.lng }}
+                                onClick={() => setSelectedCrash(crash)}
+                            >
+                                <Pin 
+                                    background={"red"}
+                                    borderColor={"grey"}
+                                    glyphColor={"purple"}
+                                />
+                            </AdvancedMarker>
+                        );
+                    })}
+
+                    {selectedCrash && (
+                        <InfoWindow
+                            position={{
+                                lat: selectedCrash.location.lat,
+                                lng: selectedCrash.location.lng,
+                            }}
+                            onCloseClick={() => setSelectedCrash(null)}
+                        >
+                            <div>
+                                <p><strong>Address:</strong> {selectedCrash.location.formattedAddress}</p>
+                                <p><strong>Date:</strong> {selectedCrash.date}</p>
+                                <p><strong>Time:</strong> {selectedCrash.time}</p>
+                            </div>
+                        </InfoWindow>
+                    )}
+                </Map>
             </div>
         </APIProvider>
-        
     );
 }
-
-
-    // const [user, setUser] = useState(null);
-
-    // useEffect(() => {
-    //     function loadUserData(){
-    //         const token = sessionStorage.getItem("User")
-    //         setUser(jwtDecode(token))
-    //     }   
-    //     loadUserData();
-    // }, [])

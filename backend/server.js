@@ -4,6 +4,7 @@ const cors = require('cors')
 const users = require('./userRoutes')
 const rettiwt = require('./rettiwtRoutes')
 const tweets = require('./tweetRoutes')
+const crashRoutes = require('./crashRoutes');
 const { createServer } = require("http");
 const { Server } = require('socket.io')
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(users) // mounts to userRoutes
 app.use(rettiwt)
 app.use(tweets)
+app.use(crashRoutes);
 
 
 io.on('connection', (socket) => {

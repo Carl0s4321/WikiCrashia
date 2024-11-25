@@ -97,7 +97,37 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
     }
 })
 
+tweetRoutes.route('/tweets').get(async (req, res) => {
+    try {
+        const db = database.getDb();
+        const tweets = await db.collection(TWEET_COLLECTION_NAME).find({}).toArray();
 
+        if (tweets.length > 0) {
+            res.status(200).json(tweets);
+        } else {
+            res.status(404).json({ message: "No tweets found." });
+        }
+    } catch (error) {
+        console.error("Error fetching tweets:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+tweetRoutes.route('/tweets/:id').get(async (req, res) => {
+    try {
+        const db = database.getDb();
+        const tweet = await db.collection(TWEET_COLLECTION_NAME).findOne({ tweet_id: req.params.id });
+
+        if (tweet) {
+            res.status(200).json(tweet);
+        } else {
+            res.status(404).json({ message: "Tweet not found." });
+        }
+    } catch (error) {
+        console.error("Error fetching tweet:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 // // make CRUD operations:
 // // retrieve all
