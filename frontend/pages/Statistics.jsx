@@ -52,10 +52,10 @@ export function Statistics() {
     switch (timeFilter) {
       case "week":
         const weekAgo = new Date(now.setDate(now.getDate() - 7));
-        return data.filter(d => new Date(d.date) >= weekAgo);
+        return data.filter(d => new Date(d.dateTime) >= weekAgo);
       case "month":
         const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
-        return data.filter(d => new Date(d.date) >= monthAgo);
+        return data.filter(d => new Date(d.dateTime) >= monthAgo);
       default:
         return data;
     }
@@ -202,13 +202,17 @@ export function Statistics() {
     if (crashData.length > 0 && timelineRef.current) {
       const filteredData = filterDataByTime(crashData);
       
+      // Instead of sorting by the string date, use the new dateTime field I added
       const timelineData = Object.entries(
         filteredData.reduce((acc, crash) => {
-          const date = crash.date;
-          acc[date] = (acc[date] || 0) + 1;
+          const date = new Date(crash.dateTime);
+          const dateKey = date.toISOString().split('T')[0];
+          acc[dateKey] = (acc[dateKey] || 0) + 1;
           return acc;
         }, {})
-      ).map(([date, count]) => ({ date, count }));
+      ).map(([date, count]) => 
+        ({ date, count, dateObj: new Date(date)}))
+        .sort((a, b) => a.dateObj - b.dateObj); 
 
       const chart = Plot.plot({
         height: 500,
@@ -219,7 +223,9 @@ export function Statistics() {
         fontFamily: "system-ui",
         x: {
           label: "Date →",
-          tickRotate: -45
+          tickRotate: -45,
+          type: "time",
+          tickFormat: "%b %d"
         },
         y: {
           label: "↑ Number of Crashes",
@@ -227,19 +233,19 @@ export function Statistics() {
         },
         marks: [
           Plot.areaY(timelineData, {
-            x: "date",
+            x: "dateObj",
             y: "count",
             fill: "lightblue",
             opacity: 0.3
           }),
           Plot.line(timelineData, {
-            x: "date",
+            x: "dateObj",
             y: "count",
             stroke: "blue",
             strokeWidth: 2
           }),
           Plot.dot(timelineData, {
-            x: "date",
+            x: "dateObj",
             y: "count",
             fill: "blue",
             tip:true,

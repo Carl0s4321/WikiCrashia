@@ -3,6 +3,7 @@ const database = require('./connect');
 const ObjectId = require('mongodb').ObjectId;
 require("dotenv").config({path: "./config.env"})
 const error = require('./util')
+const { convertToDate } = require('./dateConverter');
 
 let tweetRoutes = express.Router();
 const TWEET_COLLECTION_NAME = "tweets"
@@ -41,6 +42,7 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
             
             const crash = await db.collection(CRASH_COLLECTION_NAME).findOne({'location.formattedAddress': tweet.location.formattedAddress})
 
+            const dateTimeConvert = convertToDate(tweet.localDate, tweet.localTime);
             if(!crash){
                 const newCrash = {
                     location: {
@@ -51,6 +53,7 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
                     },
                     date: tweet.localDate,
                     time: tweet.localTime,
+                    dateTime: dateTimeConvert
                 }
                 const crashResult = await db.collection('crashes').insertOne(newCrash);
                 crashId = crashResult.insertedId;
