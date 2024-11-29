@@ -7,6 +7,7 @@ const tweets = require('./tweetRoutes')
 const crashRoutes = require('./crashRoutes');
 const { createServer } = require("http");
 const { Server } = require('socket.io')
+const RettiwtSocketService = require('./rettiwtSocketService');
 
 const app = express();
 const PORT = 3000;
@@ -34,7 +35,25 @@ io.on('connection', (socket) => {
     });
 });
 
-httpServer.listen(PORT, () => {
-    connect.connectToServer();
-    console.log(`server connected to port ${PORT}`)
-}); 
+
+const startServer = async () => {
+
+    await connect.connectToServer();
+    const rettiwtService = new RettiwtSocketService(io);
+    app.set('rettiwtService', rettiwtService);
+
+    await rettiwtService.start();
+    rettiwtService.printTweets();
+
+    httpServer.listen(PORT, async () => {
+        console.log(`server connected to port ${PORT}`);
+    }); 
+}
+
+try {
+    startServer();
+    console.log("Http server started...")
+}
+catch (error) {
+    console.log("Error starting server...")
+}

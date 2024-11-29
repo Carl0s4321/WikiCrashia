@@ -1,4 +1,4 @@
-import { HomeIcon, ProfileIcon, FeedsIcon } from './NavIconSvgs';
+import { HomeIcon, ProfileIcon, FeedsIcon, StatisticsIcon } from './NavIconSvgs';
 
 export const pageData = [
     {
@@ -17,4 +17,9 @@ export const pageData = [
         icon: FeedsIcon,
         
     },
+    {
+        name: "Statistics",
+        path: "/statistics",
+        icon: StatisticsIcon,
+    }
 ]

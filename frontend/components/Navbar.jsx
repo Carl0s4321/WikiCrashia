@@ -18,7 +18,12 @@ function getStyles(page) {
     return {
       fill: 'rgb(255, 236, 214)',
       stroke: 'rgb(255, 145, 77)'
-    };
+    }; 
+  } else if (page == "Statistics") {
+    return {
+        fill: 'rgb(255, 236, 214)',
+        stroke: 'rgb(255, 145, 77)'
+    }; 
   } else if ("Normal") {
     return {
       fill: 'transparent',
@@ -55,15 +60,16 @@ export function Navbar() {
     <div className="flex flex-row space-x-4 m-auto items-center justify-around border border-inherit rounded-lg lg:w-5/12 sm:w-4/5 shadow mt-4 p-4">
       {pageData.map((page) => {
         const isActive = location.pathname === page.path;
-
+        console.log(page);
         return (
           <div
             key={page.path} // Move the key prop here
             className={`flex flex-col space-y-4 justify-center items-center ${isActive ? '-translate-y-1 transition' : ""}`}
-          >
+          > 
             <Link to={page.path}>
               <page.icon size={30} isActive={isActive} />
             </Link>
+            
 
             {isActive &&
               <>
@@ -80,11 +86,6 @@ export function Navbar() {
         );
       })}
 
-      <Link to="/statistics">
-        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Statistics
-        </button>
-      </Link>
       <button onClick={handleLogout}>
         <LogoutIcon size={40} />
       </button>

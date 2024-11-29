@@ -97,3 +97,28 @@ export function FeedsIcon({ size = 24, isActive = false}) {
   );
 }
 
+export function StatisticsIcon({size = 24, isActive = false}) {
+    const style = isActive ? {
+        fill: 'rgb(255, 236, 214)',
+        stroke: 'rgb(255, 145, 77)',
+    } : {
+        fill: 'transparent',
+        stroke: 'black'
+    };
+
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+            <rect x="5" y="20" width="6" height="20" stroke="#000" strokeWidth="1.4" fill="white"/>
+            <rect x="14" y="15" width="6" height="25" stroke="#000" strokeWidth="1.4" fill="white"/>
+            <rect x="23" y="17" width="6" height="23" stroke="#000" strokeWidth="1.4" fill="white"/>
+            <rect x="32" y="10" width="6" height="30" stroke="#000" strokeWidth="1.4" fill="white"/>
+        </svg>
+
+    
+
+
+
+
+
+    );
+}
