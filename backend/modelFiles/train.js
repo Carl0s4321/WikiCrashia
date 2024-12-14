@@ -2905,7 +2905,7 @@ async function trainModel() {
         saveLabeledDataset(processedTweets, classifier);
         
         console.log('\nStarting model training...');
-        const history = await classifier.train(processedTweets, 15);
+        const history = await classifier.train(processedTweets, 20);
 
         console.log('\nTesting predictions on sample tweets:');
         for (let i = 0; i < 3 && i < processedTweets.length; i++) {

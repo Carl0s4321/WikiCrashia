@@ -45,9 +45,9 @@ class CrashSeverityClassifier {
         ]
 
         this.SEVERITY_WEIGHTS = {
-            PEAK_TIME: 3,
+            PEAK_TIME: 2,
             ROAD_TYPE: {
-                major: 4,
+                major: 5,
                 skeletal: 3, 
                 other: 1
             },
@@ -57,7 +57,7 @@ class CrashSeverityClassifier {
                 single_lane: 1
             },
             INCIDENT_TYPE: {
-                critical: 4,    // Ex. Collision, multi-vehicle incidents
+                critical: 6,    // Ex. Collision, multi-vehicle incidents
                 major: 3,       // Ex. Multiple lanes blocked.
                 moderate: 2,    // Ex. Just one lane blocked.
                 minor: 1        // General incidents
@@ -85,7 +85,8 @@ class CrashSeverityClassifier {
             major: [
                 'blocking multiple lanes', 'major delays', 'delays',
                 'blocking the intersection', 'expect major backups',
-                'blocked off', 'too slippery to get through', 'blocking all lanes', 'blocking'
+                'blocked off', 'too slippery to get through', 'blocking all lanes', 'blocking', 'blocking both lanes',
+                'jackknifed', 'jacknifed', 'jacknife'
             ],
             moderate: [
                 'blocking the right lane', 'blocking the left lane', 'blocking the middle lane', 'blocking the left-hand lane', 'blocking the right-hand lane',
@@ -180,14 +181,14 @@ class CrashSeverityClassifier {
             severityScore += this.SEVERITY_WEIGHTS.PEAK_TIME;
         }
 
+        let maxIncidentScore = 0;
         for (const [location, keywords] of Object.entries(this.LOCATION_KEYWORDS)) {
             if (keywords.some(keyword => text.includes(keyword))) {
-                severityScore += this.SEVERITY_WEIGHTS.LOCATION_TYPE[location];
+                maxIncidentScore += this.SEVERITY_WEIGHTS.LOCATION_TYPE[location];
                 break;
             }
         }
 
-        let maxIncidentScore = 0;
         for (const [severity, keywords] of Object.entries(this.INCIDENT_KEYWORDS)) {
             if (keywords.some(keyword => text.includes(keyword))) {
                 const score = this.SEVERITY_WEIGHTS.INCIDENT_TYPE[severity];
@@ -196,9 +197,9 @@ class CrashSeverityClassifier {
         }
         severityScore += maxIncidentScore;
 
-        if (severityScore >= 10) {
+        if (severityScore >= 13) {
             return 2;
-        } else if (severityScore >= 6) {
+        } else if (severityScore >= 8) {
             return 1;
         }
         return 0;
