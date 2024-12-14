@@ -1,15 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import * as Plot from "@observablehq/plot";
 
+const calgaryBounds = {
+    northeast: { lat: 51.2130, lng: -113.3064 },  // NE corner
+    southwest: { lat: 50.8000, lng: -114.0714 }   // SW corner
+};
+
 export function Statistics() {
   const [crashData, setCrashData] = useState([]);
   const [tweetData, setTweetData] = useState([]);
   const [timeFilter, setTimeFilter] = useState("all");
+
+  // 0.02 is extra padding just in case
   const [view, setView] = useState({
-    x: [-114.2, -114.0], 
-    y: [50.95, 51.15]    
+    x: [calgaryBounds.southwest.lng - 0.02, calgaryBounds.northeast.lng + 0.02], 
+    y: [calgaryBounds.southwest.lat - 0.02, calgaryBounds.northeast.lat + 0.02]    
   });  
-  const [zoomFactor, setZoomFactor] = useState(1.1); 
+
+  const [zoomFactor, setZoomFactor] = useState(1.05); 
   const [isDragging, setIsDragging] = useState(false); 
   const [dragStart, setDragStart] = useState(null); 
   const mapRef = useRef(null);
@@ -80,12 +88,14 @@ export function Statistics() {
           label: "Longitude →",
           tickRotate: -45,
           tickFormat: ".4f",
-          domain: view.x
+          domain: view.x,
+          clamp: true
         },
         y: {
           label: "↑ Latitude",
           tickFormat: ".4f",
-          domain: view.y
+          domain: view.y,
+          clamp: true
         },
         color: {
           type: "linear",
@@ -93,15 +103,15 @@ export function Statistics() {
         },
         marks: [
           Plot.density(filteredData, {
-            x: d => d.location.lng,
-            y: d => d.location.lat,
+            x: d => Math.max(calgaryBounds.southwest.lng, Math.min(calgaryBounds.northeast.lng, d.location.lng)),
+            y: d => Math.max(calgaryBounds.southwest.lat, Math.min(calgaryBounds.northeast.lat, d.location.lat)),
             fill: "density",
             bandwidth: 0.01,
             opacity: 0.5
           }),
           Plot.dot(filteredData, {
-            x: d => d.location.lng,
-            y: d => d.location.lat,
+            x: d => Math.max(calgaryBounds.southwest.lng, Math.min(calgaryBounds.northeast.lng, d.location.lng)),
+            y: d => Math.max(calgaryBounds.southwest.lat, Math.min(calgaryBounds.northeast.lat, d.location.lat)),
             fill: "blue",
             opacity: 0.6,
             r: 3,
@@ -120,26 +130,81 @@ export function Statistics() {
   }, [crashData, view]);
 
   const handleScroll = (event) => {
+    if (!mapRef.current) {
+        return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
     const { offsetX, offsetY } = event.nativeEvent;
     const rect = mapRef.current.getBoundingClientRect();
 
-    const xRatio = offsetX / rect.width; 
-    const yRatio = offsetY / rect.height; 
+    let xRatio = offsetX / rect.width; 
+    let yRatio = offsetY / rect.height; 
 
-    const [xMin, xMax] = view.x;
-    const [yMin, yMax] = view.y;
+    let [xMin, xMax] = view.x;
+    let [yMin, yMax] = view.y;
 
-    const xRange = xMax - xMin;
-    const yRange = yMax - yMin;
+    let xRange = xMax - xMin;
+    let yRange = yMax - yMin;
 
-    const zoomDirection = event.deltaY > 0 ? 1 / zoomFactor : zoomFactor; 
-    const newXRange = xRange * zoomDirection;
-    const newYRange = yRange * zoomDirection;
+    let zoomDirection = event.deltaY > 0 ? zoomFactor : 1 / zoomFactor; 
 
-    const newXMin = xMin + xRange * xRatio * (1 - zoomDirection);
-    const newXMax = newXMin + newXRange;
-    const newYMin = yMin + yRange * yRatio * (1 - zoomDirection);
-    const newYMax = newYMin + newYRange;
+    let newXRange = xRange * zoomDirection;
+    let newYRange = yRange * zoomDirection;
+
+    let newXMin = xMin + xRange * xRatio * (1 - zoomDirection);
+    let newXMax = newXMin + newXRange;
+    let newYMin = yMin + yRange * yRatio * (1 - zoomDirection);
+    let newYMax = newYMin + newYRange;
+
+    // Max zoom
+    if (newXMax - newXMin > calgaryBounds.northeast.lng - calgaryBounds.southwest.lng + 0.04) {
+        newXMin = calgaryBounds.southwest.lng - 0.02;
+        newXMax = calgaryBounds.northeast.lng + 0.02;
+    }
+    
+    if (newYMax - newYMin > calgaryBounds.northeast.lat - calgaryBounds.southwest.lat + 0.04) {
+        newYMin = calgaryBounds.southwest.lat - 0.02;
+        newYMax = calgaryBounds.southwest.lat + 0.02;
+    }
+
+    // Minimum zoom
+    const minZoom = 0.02;
+    if (newXMax - newXMin < minZoom) {
+      const centerX = (newXMax + newXMin) / 2;
+      newXMin = centerX - minZoom / 2;
+      newXMax = centerX + minZoom / 2;
+    }
+    if (newYMax - newYMin < minZoom) {
+      const centerY = (newYMax + newYMin) / 2;
+      newYMin = centerY - minZoom / 2;
+      newYMax = centerY + minZoom / 2;
+    }
+
+    if (newXMin < calgaryBounds.southwest.lng - 0.02) {
+        const shift = calgaryBounds.southwest.lng - 0.02 - newXMin;
+        newXMin += shift;
+        newXMax += shift;
+    }
+
+    if (newXMax > calgaryBounds.northeast.lng + 0.02) {
+        const shift = newXMax - (calgaryBounds.northeast.lng + 0.02);
+        newXMin += shift;
+        newXMax += shift;
+    }
+
+    if (newYMin < calgaryBounds.southwest.lat - 0.02) {
+        const shift = calgaryBounds.southwest.lat - 0.02 - newYMin;
+        newYMin += shift;
+        newYMax += shift;
+    }
+
+    if (newYMax > calgaryBounds.northeast.lat + 0.02) {
+        const shift = newYMax - (calgaryBounds.northeast.lat + 0.02);
+        newYMin += shift;
+        newYMax += shift;
+    }
+
 
     setView({
       x: [newXMin, newXMax],
@@ -168,6 +233,23 @@ export function Statistics() {
     const newXMax = xMax - deltaX * (xRange / 600);
     const newYMin = yMin + deltaY * (yRange / 500); 
     const newYMax = yMax + deltaY * (yRange / 500);
+
+    if (newXMin < calgaryBounds.southwest.lng - 0.02) {
+        newXMin = calgaryBounds.southwest.lng - 0.02;
+        newXMax = newXMin + xRange;
+    }
+    if (newXMax > calgaryBounds.northeast.lng + 0.02) {
+        newXMax = calgaryBounds.northeast.lng + 0.02;
+        newXMin = newXMax - xRange;
+    }
+    if (newYMin < calgaryBounds.southwest.lat - 0.02) {
+        newYMin = calgaryBounds.southwest.lat - 0.02;
+        newYMax = newYMin + yRange;
+    }
+    if (newYMax > calgaryBounds.northeast.lat + 0.02) {
+        newYMax = calgaryBounds.northeast.lat + 0.02;
+        newYMin = newYMax - yRange;
+    }
 
     setView({ x: [newXMin, newXMax], y: [newYMin, newYMax] });
     setDragStart({ x: event.clientX, y: event.clientY }); 
@@ -451,21 +533,35 @@ export function Statistics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-6 text-center ">Crash Density Map</h2>
-        <div
-          ref={mapRef}
-          className="border border-gray-300 rounded-lg"
-          onWheel={handleScroll} 
-          onMouseDown={handleMouseDown} 
-          onMouseMove={handleMouseMove} 
-          onMouseUp={handleMouseUp} 
-          onMouseLeave={handleMouseUp} 
-          style={{
-            height: "500px", 
-            width: "100%", 
-            overflow: "hidden",
-            cursor: isDragging ? "grabbing" : "grab",
-          }}
-        ></div>
+        <div className="overflow-hidden">
+            <div
+            ref={mapRef}
+            className="border border-gray-300 rounded-lg"
+            onWheelCapture={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                handleScroll(e);
+            }}
+            onWheel={handleScroll} 
+            onMouseDown={handleMouseDown} 
+            onMouseMove={handleMouseMove} 
+            onMouseUp={handleMouseUp} 
+            onMouseLeave={handleMouseUp} 
+            style={{
+                height: "500px", 
+                width: "100%", 
+                overflow: "hidden",
+                cursor: isDragging ? "grabbing" : "grab",
+                touchAction: "none",
+                position: "relative",
+                isolation: "isolate"
+            }}
+            onTouchStart={(e) => e.preventDefault()}
+            onTouchMove={(e) => e.preventDefault()}
+            ></div>
+
+        </div>
       </div>
 
 
