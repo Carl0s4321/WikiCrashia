@@ -2,10 +2,6 @@ const CrashSeverityClassifier = require('./severityModel');
 const fs = require('fs').promises;
 const tweets = [
     {
-      "text": "",
-      "time": ""
-    },
-    {
       "text": "ALERT: Traffic incident on 53 St and 146 Ave SW. Expect delays in the area. #yyctraffic #yycroads",
       "time": "5:29 p.m."
     },
@@ -2905,7 +2901,7 @@ async function trainModel() {
         saveLabeledDataset(processedTweets, classifier);
         
         console.log('\nStarting model training...');
-        const history = await classifier.train(processedTweets, 20);
+        const history = await classifier.train(processedTweets, 30);
 
         console.log('\nTesting predictions on sample tweets:');
         for (let i = 0; i < 3 && i < processedTweets.length; i++) {

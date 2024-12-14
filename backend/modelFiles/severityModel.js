@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
 const { once } = require('events');
+const { throws } = require('assert');
 
 class CrashSeverityClassifier {
     constructor() {
@@ -392,8 +393,30 @@ class CrashSeverityClassifier {
         const xTensor = tf.tensor2d(trainingData.sequences);
         const yTensor = tf.tensor1d(trainingData.labels);
 
-
+        // This is the original adam's learning rate 
+        const initialLearningRate = 0.001;
         const minimumLearningRate = 0.0001;
+        const decayRate = 0.85;
+        let currentLearningRate = initialLearningRate;
+
+        const learningRateScheduler = {
+            onEpochBegin: async (epoch) => {
+                // Starting decay at epoch 5 because it dropped way too quickly.
+                const decayFactor = Math.pow(decayRate, Math.floor(epoch / 5));
+                let newLearningRate = Math.max(initialLearningRate * decayFactor, minimumLearningRate);
+                
+                if (currentLearningRate !== newLearningRate) {
+                    const optimizer = tf.train.adamax(newLearningRate);
+                    this.model.compile({
+                        optimizer, 
+                        loss: 'sparseCategoricalCrossentropy',
+                        metrics: ['accuracy']
+                    });
+                    console.log(`Epoch: ${epoch} and the current learning rate is: ${newLearningRate}.`)
+                    currentLearningRate = newLearningRate;
+                }
+            }
+        }
 
 
         // Keeps overflowing the heap?
@@ -422,6 +445,7 @@ class CrashSeverityClassifier {
             shuffle: true,
             callbacks: [
                 custom,
+                learningRateScheduler
             ]
         });
 
