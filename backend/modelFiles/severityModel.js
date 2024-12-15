@@ -395,9 +395,9 @@ class CrashSeverityClassifier {
         // This is the original adam's learning rate 
         const initialLearningRate = 0.001;
         const minimumLearningRate = 0.00001;
-        const earlyDecayRate = 0.94;
-        const midDecayRate = 0.90;
-        const laterDecayRate = 0.80;
+        const earlyDecayRate = 0.97;
+        const midDecayRate = 0.93;
+        const laterDecayRate = 0.90;
         let currentLearningRate = initialLearningRate;
         let decayFactor = 0;
 
@@ -409,20 +409,27 @@ class CrashSeverityClassifier {
 
         const learningRateScheduler = {
             onEpochBegin: async (epoch) => {
-                let decayRate, decayInterval;
-                // Adjusted for higher learning rate for the first 25 epochs.
-                if (epoch < 18) {
+                let decayRate, decayInterval, newLearningRate;
+
+                if (epoch < 4) {
+                    newLearningRate = initialLearningRate * (epoch + 1) / 4;
+                    console.log(`Epoch: ${epoch}, Phase: warmup, Learning rate: ${newLearningRate}`);
+                    return newLearningRate;
+                }
+
+                // Adjusted for higher learning rate for the first 20 epochs, then after 33 epochs, then after that
+                if (epoch < 22) {
                     decayRate = earlyDecayRate;
-                    decayInterval = 7;
-                } else if (epoch < 33) {
+                    decayInterval = 9;
+                } else if (epoch < 36) {
                     decayRate = midDecayRate;
-                    decayInterval = 5;
+                    decayInterval = 7;
                 } else {
                     decayRate = laterDecayRate;
-                    decayInterval = 3;
+                    decayInterval = 5;
                 }
-                decayFactor = Math.pow(decayRate, Math.floor(epoch / decayInterval));
-                let newLearningRate = Math.max(initialLearningRate * decayFactor, minimumLearningRate);
+                decayFactor = Math.pow(decayRate, Math.floor((epoch - 4) / decayInterval));
+                newLearningRate = Math.max(initialLearningRate * decayFactor, minimumLearningRate);
                 
                 if (currentLearningRate !== newLearningRate) {
                     const optimizer = tf.train.adamax(newLearningRate);
