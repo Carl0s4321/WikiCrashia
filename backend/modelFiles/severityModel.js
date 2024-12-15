@@ -256,12 +256,11 @@ class CrashSeverityClassifier {
         // Deeper classification layers
         this.model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
         this.model.add(tf.layers.batchNormalization());
-        this.model.add(tf.layers.dropout({ rate: 0.3 }));
+        this.model.add(tf.layers.dropout({ rate: 0.2 }));
 
         this.model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
         this.model.add(tf.layers.batchNormalization());
-        this.model.add(tf.layers.dropout({ rate: 0.2 }));
-
+        this.model.add(tf.layers.dropout({ rate: 0.1 }));
         this.model.add(tf.layers.dense({ units: 3, activation: 'softmax' }));
 
         // Adamax is better than adam I think for this case...
@@ -395,14 +394,14 @@ class CrashSeverityClassifier {
 
         // This is the original adam's learning rate 
         const initialLearningRate = 0.001;
-        const minimumLearningRate = 0.0004;
+        const minimumLearningRate = 0.0001;
         const decayRate = 0.85;
         let currentLearningRate = initialLearningRate;
 
         const classWeights = {
             '0': 1.0,
             '1': 2.3,
-            '2': 3.0
+            '2': 4.0
         }
 
         const learningRateScheduler = {
