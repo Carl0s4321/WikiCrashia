@@ -394,9 +394,12 @@ class CrashSeverityClassifier {
 
         // This is the original adam's learning rate 
         const initialLearningRate = 0.001;
-        const minimumLearningRate = 0.0001;
-        const decayRate = 0.85;
+        const minimumLearningRate = 0.00001;
+        const earlyDecayRate = 0.94;
+        const midDecayRate = 0.90;
+        const laterDecayRate = 0.80;
         let currentLearningRate = initialLearningRate;
+        let decayFactor = 0;
 
         const classWeights = {
             '0': 1.0,
@@ -406,8 +409,19 @@ class CrashSeverityClassifier {
 
         const learningRateScheduler = {
             onEpochBegin: async (epoch) => {
-                // Starting decay at epoch 5 because it dropped way too quickly.
-                const decayFactor = Math.pow(decayRate, Math.floor(epoch / 5));
+                let decayRate, decayInterval;
+                // Adjusted for higher learning rate for the first 25 epochs.
+                if (epoch < 18) {
+                    decayRate = earlyDecayRate;
+                    decayInterval = 7;
+                } else if (epoch < 33) {
+                    decayRate = midDecayRate;
+                    decayInterval = 5;
+                } else {
+                    decayRate = laterDecayRate;
+                    decayInterval = 3;
+                }
+                decayFactor = Math.pow(decayRate, Math.floor(epoch / decayInterval));
                 let newLearningRate = Math.max(initialLearningRate * decayFactor, minimumLearningRate);
                 
                 if (currentLearningRate !== newLearningRate) {
