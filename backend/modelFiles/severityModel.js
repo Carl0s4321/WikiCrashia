@@ -1,5 +1,5 @@
 const natural = require('natural');
-const tf = require('@tensorflow/tfjs');
+const tf = require('@tensorflow/tfjs-node');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
@@ -270,7 +270,7 @@ class CrashSeverityClassifier {
         this.model.compile({
             optimizer: optimizer,
             loss: 'sparseCategoricalCrossentropy',
-            metrics: ['accuracy']
+            metrics: ['accuracy'],
         });
     }
 
@@ -395,9 +395,15 @@ class CrashSeverityClassifier {
 
         // This is the original adam's learning rate 
         const initialLearningRate = 0.001;
-        const minimumLearningRate = 0.0001;
+        const minimumLearningRate = 0.0004;
         const decayRate = 0.85;
         let currentLearningRate = initialLearningRate;
+
+        const classWeights = {
+            '0': 1.0,
+            '1': 2.3,
+            '2': 3.0
+        }
 
         const learningRateScheduler = {
             onEpochBegin: async (epoch) => {
@@ -446,7 +452,8 @@ class CrashSeverityClassifier {
             callbacks: [
                 custom,
                 learningRateScheduler
-            ]
+            ],
+            classWeight: classWeights
         });
 
         await this.saveModel();
