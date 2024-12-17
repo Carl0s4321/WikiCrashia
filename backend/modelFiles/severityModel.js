@@ -61,7 +61,6 @@ class CrashSeverityClassifier {
                 critical: 6,    // Ex. Collision, multi-vehicle incidents
                 major: 3,       // Ex. Multiple lanes blocked.
                 moderate: 2,    // Ex. Just one lane blocked.
-                minor: 1        // General incidents
             }
         }
 
@@ -92,7 +91,7 @@ class CrashSeverityClassifier {
             moderate: [
                 'blocking the right lane', 'blocking the left lane', 'blocking the middle lane', 'blocking the left-hand lane', 'blocking the right-hand lane',
                 'blocking the right-hand lane', 'blocking the left-hand lane', 'right lane blocked', 'blocking the RH lane', 'blocking the LH lane',
-                'left lane blocked', 'expect delays', 'drive with caution', 'lhl', 'rhl', 'shoulder closure',
+                'left lane blocked', 'drive with caution', 'lhl', 'rhl', 'shoulder closure',
                 'partially blocking', 'single-vehicle', 'single vehicle', 'lane closure', 'stalled vehicle', 'partially blocking'
             ]
         };
@@ -224,44 +223,51 @@ class CrashSeverityClassifier {
 
         this.model.add(tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
-            outputDim: 64,  
+            outputDim: 128,  
             inputLength: this.maxSequenceLength,
             maskZero: true,
         }));
 
         this.model.add(tf.layers.reshape({
-            targetShape: [this.maxSequenceLength, 64]
+            targetShape: [this.maxSequenceLength, 128]
+        }));
+
+        this.model.add(tf.layers.bidirectional({
+            layer: tf.layers.lstm({
+                units: 64,
+                returnSequences: true,
+                recurrentDropout: 0.3
+            })
         }));
 
         this.model.add(tf.layers.bidirectional({
             layer: tf.layers.lstm({
                 units: 32,
-                returnSequences: true,
-                recurrentDropout: 0.2
-            })
-        }));
-
-        this.model.add(tf.layers.bidirectional({
-            layer: tf.layers.lstm({
-                units: 16,
                 returnSequences: false
             })
         }));
 
         this.model.add(tf.layers.dense({
-            units: 32,
-            activation: 'tanh'
+            units: 128,
+            activation: 'relu',
+            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
         }));
+        this.model.add(tf.layers.batchNormalization());
+        this.model.add(tf.layers.dropout({ rate: 0.3 }));
 
-        // Deeper classification layers
-        this.model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+        this.model.add(tf.layers.dense({
+            units: 64,
+            activation: 'relu',
+            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
+        }));
         this.model.add(tf.layers.batchNormalization());
         this.model.add(tf.layers.dropout({ rate: 0.2 }));
 
-        this.model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
-        this.model.add(tf.layers.batchNormalization());
-        this.model.add(tf.layers.dropout({ rate: 0.1 }));
-        this.model.add(tf.layers.dense({ units: 3, activation: 'softmax' }));
+        this.model.add(tf.layers.dense({ 
+            units: 3, 
+            activation: 'softmax', 
+            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 }) 
+        }));
 
         // Adamax is better than adam I think for this case...
         const optimizer = tf.train.adamax(0.001);
@@ -401,11 +407,13 @@ class CrashSeverityClassifier {
         let currentLearningRate = initialLearningRate;
         let decayFactor = 0;
 
+
         const classWeights = {
             '0': 1.0,
-            '1': 2.3,
-            '2': 4.0
-        }
+            '1': 3.2,
+            '2': 48.0
+        };
+        console.log('Class weights:', classWeights);
 
         const learningRateScheduler = {
             onEpochBegin: async (epoch) => {
@@ -494,5 +502,6 @@ class CrashSeverityClassifier {
         return prediction[0];
 
     }
+
 }
 module.exports = CrashSeverityClassifier;
