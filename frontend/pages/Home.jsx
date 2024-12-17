@@ -33,7 +33,7 @@ export function Home() {
         <APIProvider apiKey={googleMapsApiKey}>
             <div className="font-proxima" style={{ height: "100vh", width: "100%" }}>
                 <Map
-                    defaultZoom={9}
+                    defaultZoom={11}
                     defaultCenter={{ lat: 51.049999, lng: -114.066666 }}
                     mapId={mapID}
                     options={{
