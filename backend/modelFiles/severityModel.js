@@ -100,6 +100,26 @@ class CrashSeverityClassifier {
             fsSync.mkdirSync(this.modelSavePath, { recursive: true });
         }
     }
+    createFocalLoss(gamma = 2.0, alpha = 0.25) {
+        return (yTrue, yPred) => {
+            const epsilon = 1e-7;
+            
+            // Convert to one-hot encoding
+            const numClasses = 3;
+            const labels = tf.oneHot(tf.cast(yTrue, 'int32'), numClasses);
+            
+            // Calculate focal loss
+            const modelProbs = tf.clipByValue(yPred, epsilon, 1.0 - epsilon);
+            const modulator = tf.pow(tf.sub(1.0, modelProbs), gamma);
+            const alphaWeight = tf.mul(labels, alpha);
+            
+            const crossEntropy = tf.mul(labels, tf.log(modelProbs));
+            const weightedCrossEntropy = tf.mul(alphaWeight, crossEntropy);
+            const focalLoss = tf.mul(modulator, weightedCrossEntropy);
+            
+            return tf.neg(tf.mean(tf.sum(focalLoss, -1)));
+        };
+    }
 
     // Checking if time is during peak hours
     isPeakTime(hour) {
@@ -220,62 +240,43 @@ class CrashSeverityClassifier {
 
     async createModel() {
         this.model = tf.sequential();
-
+    
         this.model.add(tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
-            outputDim: 128,  
+            outputDim: 64,  
             inputLength: this.maxSequenceLength,
             maskZero: true,
+            embeddingsRegularizer: tf.regularizers.l2({ l2: 0.001 })
         }));
 
-        this.model.add(tf.layers.reshape({
-            targetShape: [this.maxSequenceLength, 128]
+        this.model.add(tf.layers.lstm({
+            units: 32, 
+            returnSequences: true,
+            recurrentDropout: 0.2  
         }));
 
-        this.model.add(tf.layers.bidirectional({
-            layer: tf.layers.lstm({
-                units: 64,
-                returnSequences: true,
-                recurrentDropout: 0.3
-            })
-        }));
-
-        this.model.add(tf.layers.bidirectional({
-            layer: tf.layers.lstm({
-                units: 32,
-                returnSequences: false
-            })
-        }));
-
-        this.model.add(tf.layers.dense({
-            units: 128,
-            activation: 'relu',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
-        }));
-        this.model.add(tf.layers.batchNormalization());
-        this.model.add(tf.layers.dropout({ rate: 0.3 }));
-
+        this.model.add(tf.layers.spatialDropout1d({ rate: 0.2 }));
+    
+        this.model.add(tf.layers.globalAveragePooling1d());
+        
         this.model.add(tf.layers.dense({
             units: 64,
             activation: 'relu',
             kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
         }));
-        this.model.add(tf.layers.batchNormalization());
-        this.model.add(tf.layers.dropout({ rate: 0.2 }));
-
+        this.model.add(tf.layers.dropout({ rate: 0.3 }));
+    
         this.model.add(tf.layers.dense({ 
             units: 3, 
-            activation: 'softmax', 
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 }) 
+            activation: 'softmax'
         }));
-
-        // Adamax is better than adam I think for this case...
-        const optimizer = tf.train.adamax(0.001);
-
+    
+        const optimizer = tf.train.adam(0.001);
+    
         this.model.compile({
             optimizer: optimizer,
             loss: 'sparseCategoricalCrossentropy',
-            metrics: ['accuracy'],
+            metrics: ['accuracy']
         });
     }
 
@@ -371,7 +372,7 @@ class CrashSeverityClassifier {
                 }));
 
                 this.model.compile({
-                    optimizer: tf.train.adamax(0.001),
+                    optimizer: tf.train.adam(0.001),
                     loss: 'sparseCategoricalCrossentropy',
                     metrics: ['accuracy']
                 });
@@ -399,7 +400,7 @@ class CrashSeverityClassifier {
         const yTensor = tf.tensor1d(trainingData.labels);
 
         // This is the original adam's learning rate 
-        const initialLearningRate = 0.001;
+        const initialLearningRate = 0.0005;
         const minimumLearningRate = 0.00001;
         const earlyDecayRate = 0.97;
         const midDecayRate = 0.93;
@@ -410,11 +411,13 @@ class CrashSeverityClassifier {
 
         const classWeights = {
             '0': 1.0,
-            '1': 3.2,
-            '2': 48.0
+            '1': 1.35,
+            '2': 1.60
         };
         console.log('Class weights:', classWeights);
 
+        // First learning scheduler.
+        /*
         const learningRateScheduler = {
             onEpochBegin: async (epoch) => {
                 let decayRate, decayInterval, newLearningRate;
@@ -451,21 +454,32 @@ class CrashSeverityClassifier {
                 }
             }
         }
-
-
-        // Keeps overflowing the heap?
-        /*
-        const customLearning = new tf.CustomCallback({
-            onEpochBegin: async (epoch, logs) => {
-                const decayFactor = Math.pow(0.9, Math.floor(epoch / 3));
-
-                // 0.001 was ths the initial learning rate
-                const newLearningRate = Math.max(0.001 * decayFactor, minimumLearningRate);
-                optimizer.learningRate = newLearningRate;
-                console.log(`Epoch ${epoch + 1}: Learning rate updated to ${newLearningRate}`);
-            }
-        })
         */
+
+        const learningRateScheduler = {
+            onEpochBegin: async (epoch) => {
+                let learningRate;
+                
+                if (epoch < 4) {
+                    learningRate = 0.0001 * (epoch + 1);
+                } 
+                else if (epoch < 8) {
+                    learningRate = 0.0004;
+                }
+                else {
+                    const decay = 0.5 * (1 + Math.cos(Math.PI * (epoch - 8) / (epochs - 8)));
+                    learningRate = 0.0004 * decay;
+                }
+                
+                const optimizer = tf.train.adam(learningRate);
+                this.model.compile({
+                    optimizer,
+                    loss: 'sparseCategoricalCrossentropy',
+                    metrics: ['accuracy']
+                });
+                console.log(`Epoch ${epoch}: Learning rate set to ${learningRate}`);
+            }
+        };
 
         const custom = {
             onEpochEnd: async (epoch, logs) => {
@@ -479,9 +493,11 @@ class CrashSeverityClassifier {
             shuffle: true,
             callbacks: [
                 custom,
-                learningRateScheduler
+                learningRateScheduler,
+
             ],
-            classWeight: classWeights
+            classWeight: classWeights,
+            batchSize: 16
         });
 
         await this.saveModel();
@@ -504,4 +520,6 @@ class CrashSeverityClassifier {
     }
 
 }
+
+
 module.exports = CrashSeverityClassifier;

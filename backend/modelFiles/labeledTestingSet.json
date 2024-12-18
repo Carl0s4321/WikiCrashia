@@ -573,5 +573,285 @@
     "text": "ALERT: Traffic incident on  SB 14 St and 24 Ave NW, blocking the right lane.   #yyctraffic #yycroads https://t.co/jxSO4CAq4O",
     "time": "6:45 p.m.",
     "severity": 0
+  },
+  {
+    "text": "ALERT: Multi-vehicle collision with injuries on Deerfoot Trail at Airport Trail NE, all lanes blocked. Emergency crews on scene. Expect major delays.",
+    "time": "8:15 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious multi-vehicle crash on Stoney Trail near Glenmore Trail SE, blocking all lanes. EMS responding to injuries.",
+    "time": "5:20 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major collision with rolled over vehicle on Highway 1 at Sarcee Trail, emergency services on scene. Multiple lanes closed.",
+    "time": "7:45 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Multiple vehicles spun out on Deerfoot Trail approaching McKnight Blvd NE, blocking all lanes. Emergency crews responding.",
+    "time": "4:30 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Jacknifed semi on Stoney Trail at McKnight causing multi-vehicle incident. All lanes blocked during rush hour.",
+    "time": "5:15 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Critical multi-vehicle collision on Highway 2 at 32 Avenue NE, all lanes blocked. Multiple EMS units responding.",
+    "time": "8:30 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major crash on Deerfoot Trail at Southland Drive, emergency crews responding to serious collision blocking all lanes.",
+    "time": "4:45 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Multiple vehicle incident with injuries on Stoney Trail at 16 Avenue NW. All lanes affected. First responders on scene.",
+    "time": "7:30 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Multi-vehicle collision with injuries on Deerfoot Trail at Glenmore Trail SE. All lanes blocked. Multiple EMS units on scene.",
+    "time": "5:05 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious crash involving multiple vehicles on Stoney Trail at Country Hills Blvd. Emergency crews responding. All lanes affected.",
+    "time": "8:10 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major incident on Highway 1 at 16 Avenue NE interchange. Multiple vehicles involved, all lanes blocked.",
+    "time": "4:50 p.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Multiple vehicle collision with injuries on Deerfoot Trail at Anderson Road SE. All lanes blocked both directions. Multiple EMS, Fire, and Police units responding.",
+    "time": "7:35 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Critical incident on Stoney Trail at 16 Avenue NE, multi-vehicle crash with rolled over semi blocking all lanes. Emergency crews on scene.",
+    "time": "4:25 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major collision involving several vehicles on Highway 2 approaching Airport Trail. Multiple lanes blocked in both directions. First responders attending to injuries.",
+    "time": "8:15 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious multi-vehicle incident on Deerfoot Trail at Glenmore Trail SE. Emergency services responding to collision blocking all lanes. Expect major delays.",
+    "time": "5:10 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Multiple vehicles spun out on Stoney Trail near McKnight Boulevard NE, causing chain reaction crashes. All lanes affected. Emergency crews responding.",
+    "time": "8:45 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major incident on Highway 1 at Sarcee Trail. Multi-vehicle collision with jackknifed semi blocking all westbound lanes. Multiple EMS units on scene.",
+    "time": "4:50 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious crash on Deerfoot Trail at Southland Drive SE. Multiple vehicles involved, emergency crews responding to injuries. Both directions affected.",
+    "time": "7:20 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Critical incident on Stoney Trail at Country Hills Boulevard. Multi-vehicle collision blocking all lanes, Fire department extracting trapped occupants.",
+    "time": "5:35 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major collision on Highway 2 at Peigan Trail. Multiple vehicles involved with serious injuries reported. All lanes blocked, emergency services on scene.",
+    "time": "8:05 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious multi-vehicle incident with rolled over vehicle on Deerfoot Trail at Memorial Drive. All lanes affected. Multiple emergency crews responding.",
+    "time": "4:15 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Critical situation on Stoney Trail at Glenmore Trail SE. Chain reaction crash involving multiple vehicles. All lanes blocked. EMS attending to injuries.",
+    "time": "7:55 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Major emergency response to multi-vehicle collision on Highway 1 at 16 Avenue NE interchange. Several lanes blocked both directions. Multiple injuries reported.",
+    "time": "5:25 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Serious incident on Deerfoot Trail north of Beddington Trail. Multiple vehicles involved, emergency crews responding to rollover with injuries.",
+    "time": "8:30 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Critical collision on Stoney Trail approaching Harvest Hills Boulevard. Multiple vehicles involved with semi rolled over. All lanes affected.",
+    "time": "4:40 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Major multi-vehicle crash on Highway 2 at McKnight Boulevard. Emergency crews responding to serious collision blocking all northbound lanes.",
+    "time": "7:45 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Two vehicle incident on Crowchild Trail at University Drive NW, blocking the right lane.",
+    "time": "10:30 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Traffic incident at Macleod Trail and Heritage Drive SE intersection, blocking right turn lane.",
+    "time": "2:45 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Vehicle collision on Memorial Drive at Edmonton Trail, blocking the right-hand lane. Use caution.",
+    "time": "8:45 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Single vehicle incident blocking left lane on Shaganappi Trail near Crowchild Trail.",
+    "time": "3:15 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Two vehicles involved in incident on Anderson Road at Macleod Trail, right lane blocked.",
+    "time": "4:45 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Stalled vehicle on 36 Street NE at 32 Avenue, partially blocking right shoulder.",
+    "time": "2:10 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Minor incident on Bow Trail at 37 Street SW, vehicles on shoulder.",
+    "time": "1:30 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Traffic incident on 52 Street at 61 Avenue SE, vehicles moved to side.",
+    "time": "11:20 a.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Brief delays on Barlow Trail near McKnight Blvd NE due to stalled vehicle on shoulder.",
+    "time": "10:15 a.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Minor incident on 14 Street NW at North Hill Centre, vehicles moved to shoulder.",
+    "time": "2:30 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Multi-vehicle collision on Deerfoot Trail and Airport Trail NE, blocking multiple lanes. Emergency crews on scene.",
+    "time": "8:15 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "Single vehicle incident blocking the right lane on Crowchild Trail approaching University Drive NW.",
+    "time": "10:30 a.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Traffic incident at the intersection of Macleod Trail and Heritage Drive SE, expect delays.",
+    "time": "2:45 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "Major collision on Highway 201 at Glenmore Trail, all lanes blocked. Police and EMS responding.",
+    "time": "5:20 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "Stalled vehicle in the left lane of Barlow Trail near McKnight Blvd NE.",
+    "time": "1:15 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Two-vehicle incident at Stoney Trail and 16 Ave NW, blocking the intersection.",
+    "time": "7:45 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "Multiple vehicles spun out on Deerfoot Trail near Peigan Trail SE. Right and middle lanes affected.",
+    "time": "4:30 p.m.",
+    "severity": 1
+  },
+  {
+    "text": "Single lane blocked on 14th Street NW at North Hill Centre, drive with caution.",
+    "time": "11:20 a.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Serious collision on Highway 1 at Sarcee Trail, emergency services on scene. Multiple lanes closed.",
+    "time": "8:45 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "Traffic incident on Memorial Drive at Edmonton Trail, blocking the right-hand lane.",
+    "time": "3:15 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "Multi-vehicle collision with injuries on Glenmore Trail at Blackfoot Trail SE. All lanes affected.",
+    "time": "4:45 p.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Vehicle rolled over on Shaganappi Trail near Crowchild Trail. Emergency crews responding.",
+    "time": "7:30 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "Stalled bus blocking the right lane of 36 Street NE at 32 Avenue.",
+    "time": "2:10 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "ALERT: Major incident on Deerfoot Trail approaching Beddington Trail, multiple vehicles involved, left lanes blocked.",
+    "time": "5:15 p.m.",
+    "severity": 1
+  },
+  {
+    "text": "Single vehicle incident partially blocking the intersection at John Laurie Boulevard and 14 Street NW.",
+    "time": "9:45 a.m.",
+    "severity": 1
+  },
+  {
+    "text": "Two-vehicle collision on Highway 201 at Country Hills Blvd. Emergency response on scene.",
+    "time": "8:20 a.m.",
+    "severity": 2
+  },
+  {
+    "text": "ALERT: Jacknifed semi on Stoney Trail near McKnight Blvd NE, blocking several lanes.",
+    "time": "4:50 p.m.",
+    "severity": 1
+  },
+  {
+    "text": "Traffic incident at Bow Trail and 37 Street SW, right lane blocked.",
+    "time": "1:30 p.m.",
+    "severity": 0
+  },
+  {
+    "text": "Multi-vehicle incident on Anderson Road at Macleod Trail, expect major delays.",
+    "time": "5:45 p.m.",
+    "severity": 1
+  },
+  {
+    "text": "ALERT: Serious collision at 16 Avenue and Deerfoot Trail NE. All lanes affected.",
+    "time": "7:50 a.m.",
+    "severity": 2
   }
 ]
