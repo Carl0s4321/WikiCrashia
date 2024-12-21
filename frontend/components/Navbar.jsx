@@ -67,7 +67,7 @@ export function Navbar() {
               isActive ? "-translate-y-1 transition" : ""
             }`}
           >
-            <Link to={page.path}>
+            <Link to={page.path}> 
               <page.icon size={30} isActive={isActive} />
             </Link>
 

@@ -866,7 +866,7 @@ export function FeedMain() {
         </div>
 
         <div className='sm:col-span-12 lg:col-span-6 border border-inherit '>
-          <div className=' flex flex-row items-center'>
+          {/* <div className=' flex flex-row items-center'>
             <div className='top-buttons-div w-6/12 text-center border-b border-inherit'>
               <button className={`w-full ${forYou === "forYou" ? 'top-buttons-selected' : 'top-buttons'}`}
                 onClick={() => setForYou("forYou")}
@@ -878,7 +878,7 @@ export function FeedMain() {
                 onClick={() => setForYou("following")}
               >Following</button>
             </div>
-          </div>
+          </div> */}
           <div className='flex flex-col space-y-4 py'>
             {data.length === 0 ? (
               <p>No recent incidents reported.</p>
