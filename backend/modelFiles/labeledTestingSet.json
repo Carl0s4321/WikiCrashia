@@ -107,7 +107,7 @@
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on 37 Ave west of Barlow Tr NE. Please go slow and watch for fellow Calgarians.   #yyctraffic #yycroads",
     "time": "6:38 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "In the Southeast, watch out for a crash on WB Glenmore Trail just past Deerfoot Trail, blocking the left-hand lane #yyctraffic https://t.co/hmNQt0jG4Q",
@@ -132,7 +132,7 @@
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on 26 Ave and 52 St NE. Please go slow and watch for fellow Calgarians.   #yyctraffic #yycroads",
     "time": "5:10 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic incident on  Abbeydale Dr and 68 St NE.   #yyctraffic #yycroads",
@@ -842,7 +842,7 @@
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on 8 Ave and 5 St SW. The road is closed in all directions, use alternate route. Please go slow and watch for fellow Calgarians   #yyctraffic #yycroads https://t.co/gfoPUzqkZ0",
     "time": "7:07 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  Gladstone Rd and 10 St NW.   #yyctraffic #yycroads",

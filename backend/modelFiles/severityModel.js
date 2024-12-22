@@ -244,7 +244,6 @@ class CrashSeverityClassifier {
 
     augmentTrainingData(tweets) {
         const augmentedTweets = [];
-        const maxTotalTweets = 15000;
 
         tweets.forEach(tweet => {
 
@@ -269,8 +268,7 @@ class CrashSeverityClassifier {
             }
         });
 
-        const shuffledTweets = augmentedTweets.sort(() => Math.random() - 0.5);
-        return shuffledTweets.slice(0, maxTotalTweets);
+        return augmentedTweets.sort(() => Math.random() - 0.5);
     }
 
     augmentLowSeverity(tweet, cleanedText, locationVariations, augmentedTweets) {
@@ -313,7 +311,20 @@ class CrashSeverityClassifier {
         locationVariations.forEach(location => {
 
             if (cleanedText.includes('pedestrian')) {
-                return;
+                const lowPedestrian =  [
+                    "UPDATE: Minor pedestrian incident cleared at {location}. All lanes open.",
+                    "Pedestrian incident at {location} resolved. Traffic flowing normally.",
+                    "Earlier pedestrian incident at {location} has been cleared. No delays."
+                ]
+
+                lowPedestrian.forEach(template => {
+                    const augmentedText = template.replace("{location}", location);
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(augmentedText),
+                        severity: 0
+                    });
+                });
             }
 
             for(let i = 0; i < 2; i++) {
@@ -362,7 +373,7 @@ class CrashSeverityClassifier {
             "Traffic Alert: {direction} {location} experiencing {condition}, {blockage}. {impact}",
             "{direction} {location} - {condition}. {blockage}, {impact}"
         ];
-
+    
         const conditions = [
             "significant congestion",
             "vehicle breakdown",
@@ -372,7 +383,7 @@ class CrashSeverityClassifier {
             "traffic disruption",
             "vehicle incident"
         ];
-
+    
         const blockages = [
             "blocking the right lane",
             "blocking the left lane",
@@ -382,7 +393,7 @@ class CrashSeverityClassifier {
             "single lane blocked",
             "causing lane restrictions"
         ];
-
+    
         const impacts = [
             "expect moderate delays",
             "use alternate route if possible",
@@ -394,63 +405,154 @@ class CrashSeverityClassifier {
             "allow extra travel time"
         ];
 
+        const emergencyServicesMediumTemplates = [
+            "Emergency services attending incident on {location}. Single lane affected, traffic moving.",
+            "Emergency crews on scene at {location}. Limited impact to traffic flow.",
+            "Emergency response at {location}. One lane blocked but traffic getting by.",
+            "Emergency services helping at {location}. Partial lane closure only.",
+            "Emergency crews attending. Traffic flowing with minor delays at {location}.",
+            `Emergency crews managing traffic at {location}. Single lane affected.`,
+            `Emergency response on {location}. Traffic getting by in remaining lanes.`,
+            `Emergency services on scene at {locationStr}. Minor delays only.`,
+            `First responders attending {location}. Traffic flow maintained.`,
+            `Emergency crews directing traffic at {location}. Expect brief delays.`,
+            'Emergency services are helping a pedestrian involve in an incident on {location}. Please go slow and watch for fellow Calgarians.'
+        ];
+
         const directions = ['NB', 'SB', 'EB', 'WB'];
         const areas = ['Northwest', 'Northeast', 'Southwest', 'Southeast', 'Central'];
-
-        locationVariations.forEach(location => {
-
+    
+        locationVariations.forEach(locationStr => {
+    
             const isHighPriorityRoad = this.MAJOR_ROADS.some(road => 
-                location.toLowerCase().includes(road.toLowerCase())
+                locationStr.toLowerCase().includes(road.toLowerCase())
             ) || this.SKELETAL_ROADS.some(road => 
-                location.toLowerCase().includes(road.toLowerCase())
+                locationStr.toLowerCase().includes(road.toLowerCase())
             );
+    
+            if (cleanedText.includes('pedestrian')) {
 
-            if (cleanedText.includes('pedestrian') && isHighPriorityRoad) {
-                return;
+                const mediumPedestrian = [
+                    "ALERT: Emergency services assisting pedestrian at {location}. Use caution.",
+                    "Emergency crews helping pedestrian at {location}. Single lane affected.",
+                    "Pedestrian incident on {location}. Emergency crews on scene, traffic moving.",
+                    "Emergency services attending to pedestrian at {location}. Expect minor delays.",
+                    "Pedestrian incident at {location}. Emergency crews managing traffic flow."
+                ]
+
+                mediumPedestrian.forEach(template => {
+                    const augmentedText = template.replace("{location}", locationStr);
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(augmentedText),
+                        severity: 1
+                    })
+                });
             }
-
-            const isMajorRoad = this.MAJOR_ROADS.some(road => 
-                location.toLowerCase().includes(road.toLowerCase())
-            );
-
-            const iterations = isMajorRoad ? 3 : 2;
-
+    
+            const iterations = isHighPriorityRoad ? 3 : 2;
+    
             for(let i = 0; i < iterations; i++) {
                 templates.forEach(template => {
                     let augmentedText = template
-                        .replace('{location}', location)
+                        .replace('{location}', locationStr)
                         .replace('{condition}', conditions[Math.floor(Math.random() * conditions.length)])
                         .replace('{blockage}', blockages[Math.floor(Math.random() * blockages.length)])
                         .replace('{impact}', impacts[Math.floor(Math.random() * impacts.length)])
                         .replace('{direction}', directions[Math.floor(Math.random() * directions.length)])
                         .replace('{area}', areas[Math.floor(Math.random() * areas.length)]);
-
-                    augmentedText = `${augmentedText} #yyctraffic #yycroads`;
-
+    
                     augmentedTweets.push({
                         ...tweet,
                         text: this.cleanText(augmentedText),
                         severity: 1
                     });
                 });
+                if (cleanedText.includes('emergency') || 
+                    cleanedText.includes('emergency services') || 
+                    cleanedText.includes('emergency crews')) {
+                    
+                    emergencyServicesMediumTemplates.forEach(template => {
+                        let augmentedText = template
+                            .replace('{location}', locationStr)
+                            .replace('{blockage}', blockages[Math.floor(Math.random() * blockages.length)])
+                            .replace('{impact}', impacts[Math.floor(Math.random() * impacts.length)]);
+
+                        augmentedTweets.push({
+                            ...tweet,
+                            text: this.cleanText(augmentedText),
+                            severity: 1
+                        });
+                    });
+                }
+                
             }
-
-            if (isMajorRoad) {
-                const specificBlockages = [
-                    `Traffic incident: Right lane blocked on ${location}, expect delays.`,
-                    `Left lane affected on ${location}, traffic moving slowly.`,
-                    `Center lane blocked on ${location}, use caution.`,
-                    `Lane restriction on ${location}, moderate delays building.`
+    
+            if (isHighPriorityRoad) {
+                const singleLaneMajorTemplates = [
+                    `Traffic incident: Single lane blocked on ${locationStr}, expect delays but traffic still moving.`,
+                    `Watch out for a crash on ${locationStr}, one lane affected. Moderate delays in the area.`,
+                    `Single lane closure on ${locationStr}, traffic getting by with delays.`,
+                    `Lane restriction in effect on ${locationStr}, expect moderate slowdown.`,
+                    `Traffic incident: Right lane blocked on ${locationStr}, expect delays.`,
+                    `Left lane affected on ${locationStr}, traffic moving slowly.`,
+                    `Center lane blocked on ${locationStr}, use caution.`,
+                    `Lane restriction on ${locationStr}, moderate delays building.`
                 ];
-
-                specificBlockages.forEach(text => {
+    
+                singleLaneMajorTemplates.forEach(text => {
                     augmentedTweets.push({
                         ...tweet,
-                        text: this.cleanText(`ALERT: ${text} #yyctraffic #yycroads`),
+                        text: this.cleanText(text),
+                        severity: 1
+                    });
+                });
+    
+                const emergencyMediumTemplates = [
+                    `Emergency crews on scene at ${locationStr}, single lane blocked. Traffic moving slowly.`,
+                    `First responders attending incident on ${locationStr}, partial lane closure only.`,
+                    `Emergency response on ${locationStr}, traffic getting by in remaining lanes.`,
+                    `Police attending incident on ${locationStr}, one lane affected.`
+                ];
+    
+                emergencyMediumTemplates.forEach(text => {
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(text),
                         severity: 1
                     });
                 });
             }
+    
+            const stalledVehicleTemplates = [
+                `Stalled vehicle on ${locationStr}, blocking right lane. Traffic moving in other lanes.`,
+                `Disabled vehicle on ${locationStr}, moderate impact to traffic.`,
+                `Vehicle breakdown on ${locationStr}, traffic getting by in adjacent lane.`,
+                `Mechanical issue on ${locationStr}, expect some delays but moving.`
+            ];
+    
+            stalledVehicleTemplates.forEach(text => {
+                augmentedTweets.push({
+                    ...tweet,
+                    text: this.cleanText(text),
+                    severity: 1
+                });
+            });
+    
+            const moderateTemplates = [
+                `Collision on ${locationStr}, single lane blocked but no injuries reported.`,
+                `Incident on ${locationStr} causing delays but traffic still moving.`,
+                `Minor crash on ${locationStr}, emergency crews managing traffic flow.`,
+                `Traffic backup on ${locationStr} but all emergency vehicles able to access.`
+            ];
+    
+            moderateTemplates.forEach(text => {
+                augmentedTweets.push({
+                    ...tweet,
+                    text: this.cleanText(text),
+                    severity: 1
+                });
+            });
         });
     }
 
@@ -465,7 +567,6 @@ class CrashSeverityClassifier {
         ];
 
         const pedestrianTemplates = [
-            "ALERT: Emergency services are helping a pedestrian involved in an incident on {location}. Multiple lanes affected. Please go slow and watch for fellow Calgarians",
             "CRITICAL: Emergency crews attending serious pedestrian incident on {location}. {blockage}. {emergency}",
             "MAJOR: Pedestrian incident on {location}. Full emergency response in progress. {blockage}",
             "Emergency services responding to serious pedestrian incident on {location}. {blockage}. Avoid area"
@@ -511,7 +612,122 @@ class CrashSeverityClassifier {
             "Full emergency response deployed"
         ];
 
+        const mvcSpecificTemplates = [
+            "MVC on {location} requiring full emergency response. {blockage}",
+            "Major collision reported on {location}. Emergency crews extracting. {blockage}",
+            "MVC with emergency response on {location}. Multiple units on scene",
+            "Serious collision on {location}. Emergency crews attending",
+            "Multiple vehicle collision on {location}. Emergency crews responding",
+            "Critical incident: MVC on {location}. {emergency}",
+            "Accident at {location} - MVC. Expect delays"
+        ];
+        
+
+        const emergencyResponseTemplates = [
+            "Multiple emergency units attending MVC on {location}",
+            "Fire crews and EMS responding to collision on {location}",
+            "Full emergency response to MVC on {location}",
+            "Emergency crews extracting at collision scene on {location}"
+        ];
+
+        const emergencyServicesHighTemplates = [
+            "Multiple emergency units responding to serious incident on {location}. All lanes affected.",
+            "Full emergency response deployed at {location}. Complete road closure in effect.",
+            "Major emergency response on {location}. Multiple crews on scene, avoid area.",
+            "Critical incident: Emergency services extracting at {location}. Road closed.",
+            "Emergency crews attending serious collision on {location}. Multiple lanes blocked.",
+            `Major emergency response at {location}. Multiple units on scene. Area closed.`,
+            `Critical incident with emergency extraction on {location}. Avoid area.`,
+            `Multiple emergency crews responding to serious incident on {location}.`,
+            `Full emergency response with road closure on {location}. Seek alternate routes.`,
+            `Emergency services at critical scene on {location}. All traffic diverted.`
+        ];
+
+        const highPedestrian = [
+            "CRITICAL: Serious pedestrian incident at {location}. All lanes blocked.",
+            "Emergency crews at critical pedestrian incident on {location}. Road closed.",
+            "Major pedestrian incident at {location}. Multiple emergency units on scene.",
+            "ALERT: Critical pedestrian incident at {location}. Avoid area.",
+            "Serious pedestrian incident at {location}. Full emergency response."
+        ]
+
         locationVariations.forEach(locationStr => {  
+
+            if (cleanedText.includes('emergency') || 
+                cleanedText.includes('emergency services') || 
+                cleanedText.includes('emergency crews')) {
+                
+                if (cleanedText.includes('multiple lanes') || 
+                    cleanedText.includes('all lanes') || 
+                    cleanedText.includes('serious') || 
+                    cleanedText.includes('major')) {
+                    
+                    emergencyServicesHighTemplates.forEach(template => {
+                        let augmentedText = template
+                            .replace('{location}', locationStr)
+                            .replace('{blockage}', blockages[Math.floor(Math.random() * blockages.length)])
+                            .replace('{emergency}', emergencyServices[Math.floor(Math.random() * emergencyServices.length)]);
+
+                        augmentedTweets.push({
+                            ...tweet,
+                            text: this.cleanText(augmentedText),
+                            severity: 2
+                        });
+                    });
+                }
+            }
+
+            if (cleanedText.includes('pedestrian')) {
+                highPedestrian.forEach(template => {
+                    const augmentedText = template.replace("{location}", locationStr);
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(augmentedText),
+                        severity: 2
+                    })
+                });
+            }
+
+            if (cleanedText.includes('mvc') || cleanedText.includes('collision')) {
+                mvcSpecificTemplates.forEach(template => {
+                    let augmentedText = template
+                        .replace('{location}', locationStr)
+                        .replace('{blockage}', blockages[Math.floor(Math.random() * blockages.length)])
+                        .replace('{emergency}', emergencyServices[Math.floor(Math.random() * emergencyServices.length)]);
+    
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(augmentedText),
+                        severity: 2
+                    });
+                });
+
+                emergencyResponseTemplates.forEach(template => {
+                    let augmentedText = template.replace('{location}', locationStr);
+                    
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(augmentedText),
+                        severity: 2
+                    });
+                });
+
+                const shortFormatMVC = [
+                    `MVC on ${locationStr}. Multiple emergency units responding.`,
+                    `MVC reported at ${locationStr}. Emergency crews on scene.`,
+                    `MVC: ${locationStr}. Expect major delays.`,
+                    `Collision on ${locationStr}. Emergency response in progress.`,
+                    `MVC at ${locationStr}. Multiple units attending.`
+                ];
+
+                shortFormatMVC.forEach(text => {
+                    augmentedTweets.push({
+                        ...tweet,
+                        text: this.cleanText(text),
+                        severity: 2
+                    });
+                });
+            }
 
             const isHighPriorityRoad = this.MAJOR_ROADS.some(road => 
                 locationStr.toLowerCase().includes(road.toLowerCase())
@@ -526,7 +742,7 @@ class CrashSeverityClassifier {
                         .replace('{blockage}', blockages[Math.floor(Math.random() * blockages.length)])
                         .replace('{emergency}', emergencyServices[Math.floor(Math.random() * emergencyServices.length)]);
 
-                    augmentedText = `${augmentedText} #yyctraffic #yycroads`;
+                    augmentedText = `${augmentedText}`;
 
                     augmentedTweets.push({
                         ...tweet,
@@ -548,7 +764,7 @@ class CrashSeverityClassifier {
                         .replace('{impact}', impacts[Math.floor(Math.random() * impacts.length)])
                         .replace('{emergency}', emergencyServices[Math.floor(Math.random() * emergencyServices.length)]);
 
-                    augmentedText = `${augmentedText} #yyctraffic #yycroads`;
+                    augmentedText = `${augmentedText}`;
 
                     augmentedTweets.push({
                         ...tweet,
@@ -569,7 +785,7 @@ class CrashSeverityClassifier {
                 criticalScenarios.forEach(text => {
                     augmentedTweets.push({
                         ...tweet,
-                        text: this.cleanText(`${text} #yyctraffic #yycroads`),
+                        text: this.cleanText(`${text}`),
                         severity: 2
                     });
                 });
@@ -584,13 +800,18 @@ class CrashSeverityClassifier {
                     `MVC: Multiple vehicles involved on ${locationStr}. Emergency crews on scene. All lanes blocked.`,
                     `Major collision on ${locationStr}. Multiple EMS units responding. Expect extended delays.`,
                     `Serious MVC on ${locationStr}. Full emergency response. Traffic severely impacted.`,
-                    `Two vehicle collision on ${locationStr}. All lanes blocked. Emergency crews on scene.`
+                    `Two vehicle collision on ${locationStr}. All lanes blocked. Emergency crews on scene.`,
+                    `Major collision on ${locationStr}. Multiple emergency units on scene.`,
+                    `Serious MVC on ${locationStr}. Full emergency response.`,
+                    `Critical incident: Multi-vehicle collision on ${locationStr}.`,
+                    `MVC with injuries on ${locationStr}. Emergency crews attending.`,
+                    `Collision with multiple vehicles on ${locationStr}. Major delays.`
                 ];
 
                 mvcSpecific.forEach(text => {
                     augmentedTweets.push({
                         ...tweet,
-                        text: this.cleanText(`${text} #yyctraffic #yycroads`),
+                        text: this.cleanText(`${text}`),
                         severity: 2
                     });
                 });
@@ -637,11 +858,11 @@ class CrashSeverityClassifier {
     }
 
     cleanText(text) {
-
         return text
-            .replace(/https?:\/\/\S+/g, '')         
+            .replace(/https?:\/\/\S+/g, '')        
             .replace(/(?:t\.co|bit\.ly)\/\S+/g, '') 
-            .replace(/\s+/g, ' ')                    
+            .replace(/#\w+/g, '')                   
+            .replace(/\s+/g, ' ')                 
             .toLowerCase()
             .trim();
     }
@@ -699,15 +920,31 @@ class CrashSeverityClassifier {
         const hasEmergencyServices = text.includes('emergency services') || 
                                     text.includes('emergency crews') ||
                                     text.includes('ems') ||
-                                    text.includes('ambulance');
+                                    text.includes('ambulance') ||
+                                    text.includes('emergency');
 
-        if (isPedestrianIncident && hasEmergencyServices) {
-
-            if (this.LOCATION_KEYWORDS.multiple_lanes.some(keyword => text.includes(keyword)) ||
-                this.identifyRoadType(text) !== 'other') {
+        if (isPedestrianIncident) {
+            // High severity cases for pedestrian incidents
+            if (hasEmergencyServices && 
+                (this.LOCATION_KEYWORDS.multiple_lanes.some(keyword => text.includes(keyword)) ||
+                text.includes('all directions') ||
+                text.includes('road closed') ||
+                text.includes('serious') ||
+                text.includes('critical'))) {
                 return 2;
             }
-
+            
+            // Medium severity cases - this is the default for most pedestrian incidents
+            if (hasEmergencyServices) {
+                return 1;
+            }
+            
+            // Low severity cases
+            if (text.includes('minor') || text.includes('cleared')) {
+                return 0;
+            }
+            
+            // If we have a pedestrian incident with no other context, default to medium
             return 1;
         }
 
@@ -810,173 +1047,123 @@ class CrashSeverityClassifier {
 
     async createModel() {
         const input = tf.input({shape: [this.maxSequenceLength]});
-
+        
+        // Enhanced embedding layer with careful initialization and regularization
+        // We use a moderate output dimension (96) to balance between feature capture and overfitting
+        // The random uniform initialization helps prevent large initial weights
         const embedding = tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
-            outputDim: 192,  
+            outputDim: 96,
             maskZero: true,
-            embeddingsInitializer: tf.initializers.glorotNormal(),
-            embeddingsRegularizer: tf.regularizers.l2({ l2: 0.0002 })  
+            embeddingsInitializer: tf.initializers.randomUniform(-0.05, 0.05),
+            embeddingsRegularizer: tf.regularizers.l1l2({ l1: 0.0002, l2: 0.0002 })
         }).apply(input);
-
-        const spatialDropout = tf.layers.spatialDropout1d({
-            rate: 0.2  
+        
+        // Spatial dropout helps prevent overfitting at the embedding level
+        // We use a moderate rate of 0.15 to maintain important semantic information
+        const embeddingDropout = tf.layers.spatialDropout1d({ 
+            rate: 0.2
         }).apply(embedding);
-
-        const bilstm = tf.layers.bidirectional({
-            layer: tf.layers.lstm({
-                units: 96,  
-                returnSequences: true,
-                recurrentDropout: 0.15,
-                kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-                recurrentRegularizer: tf.regularizers.l2({ l2: 0.0001 })
-            })
-        }).apply(spatialDropout);
-
-        const conv1 = tf.layers.conv1d({
-            filters: 96,  
+        
+        // Three parallel convolution paths for different aspects of the text
+        // Each focuses on a different semantic level
+        
+        // Path 1: Severity patterns (smaller window size)
+        const severityConv = tf.layers.conv1d({
+            filters: 32,
+            kernelSize: 2,
+            padding: 'same',
+            activation: 'relu',
+            kernelInitializer: 'glorotUniform',
+            name: 'severity_patterns'
+        }).apply(embeddingDropout);
+        
+        // Path 2: Location and context patterns (medium window size)
+        const contextConv = tf.layers.conv1d({
+            filters: 32,
             kernelSize: 3,
             padding: 'same',
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'local_patterns'
-        }).apply(bilstm);
-
-        const conv1Residual = tf.layers.add().apply([
-            conv1,
-            tf.layers.conv1d({
-                filters: 96,
-                kernelSize: 1,
-                padding: 'same'
-            }).apply(bilstm)
-        ]);
-
-        const middlePatternConv = tf.layers.conv1d({
-            filters: 96,
+            name: 'context_patterns'
+        }).apply(embeddingDropout);
+        
+        // Path 3: Broader context patterns (larger window size)
+        const broadConv = tf.layers.conv1d({
+            filters: 32,
             kernelSize: 4,
             padding: 'same',
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'middle_severity_patterns'
-        }).apply(bilstm);
-
-        const middleResidual = tf.layers.add().apply([
-            middlePatternConv,
-            tf.layers.conv1d({
-                filters: 96,
-                kernelSize: 1,
-                padding: 'same'
-            }).apply(bilstm)
-        ]);
-
-        const conv2 = tf.layers.conv1d({
-            filters: 96,
-            kernelSize: 5,
-            padding: 'same',
-            activation: 'relu',
-            kernelInitializer: 'glorotUniform',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'broader_patterns'
-        }).apply(bilstm);
-
-        const conv2Residual = tf.layers.add().apply([
-            conv2,
-            tf.layers.conv1d({
-                filters: 96,
-                kernelSize: 1,
-                padding: 'same'
-            }).apply(bilstm)
-        ]);
-
-        const attentionDense1 = tf.layers.dense({
-            units: 96,
+            name: 'broad_patterns'
+        }).apply(embeddingDropout);
+        
+        // Batch normalization after each convolution to stabilize training
+        const batchNorm1 = tf.layers.batchNormalization().apply(severityConv);
+        const batchNorm2 = tf.layers.batchNormalization().apply(contextConv);
+        const batchNorm3 = tf.layers.batchNormalization().apply(broadConv);
+        
+        // Simple attention mechanism for severity patterns
+        const attention = tf.layers.dense({
+            units: this.maxSequenceLength,
+            useBias: false,
             activation: 'tanh',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'attention_transform'
-        }).apply(bilstm);
-
-        const attentionWeights1 = tf.layers.dense({
-            units: 1,
-            useBias: true,
-            activation: 'softmax',
-            name: 'attention_weights'
-        }).apply(attentionDense1);
-
-        const contextVector = tf.layers.multiply()
-            .apply([bilstm, attentionWeights1]);
-
-        const attentionPool = tf.layers.globalAveragePooling1d()
-            .apply(contextVector);
-
-        const boundaryFeatures = tf.layers.dense({
-            units: 96,
-            activation: 'relu',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'boundary_features'
-        }).apply(attentionPool);
-
-        const boundaryAttention = tf.layers.dense({
-            units: 2,
-            activation: 'sigmoid',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0002 }),
-            name: 'boundary_attention'
-        }).apply(boundaryFeatures);
-
-        const maxPool1 = tf.layers.globalMaxPooling1d().apply(conv1Residual);
-        const avgPool1 = tf.layers.globalAveragePooling1d().apply(conv1Residual);
-        const maxPoolMiddle = tf.layers.globalMaxPooling1d().apply(middleResidual);
-        const avgPoolMiddle = tf.layers.globalAveragePooling1d().apply(middleResidual);
-        const maxPool2 = tf.layers.globalMaxPooling1d().apply(conv2Residual);
-        const avgPool2 = tf.layers.globalAveragePooling1d().apply(conv2Residual);
-
-        const concatenated = tf.layers.concatenate().apply([
-            maxPool1, avgPool1,
-            maxPoolMiddle, avgPoolMiddle,
-            maxPool2, avgPool2,
-            attentionPool,
-            boundaryAttention
-        ]);
-
+            name: 'attention_layer'
+        }).apply(batchNorm1);
+        
+        // Multiple pooling strategies to capture different aspects of the text
+        const maxPool1 = tf.layers.globalMaxPooling1d().apply(batchNorm1);
+        const avgPool1 = tf.layers.globalAveragePooling1d().apply(batchNorm1);
+        const maxPool2 = tf.layers.globalMaxPooling1d().apply(batchNorm2);
+        const avgPool2 = tf.layers.globalAveragePooling1d().apply(batchNorm2);
+        const maxPool3 = tf.layers.globalMaxPooling1d().apply(batchNorm3);
+        const avgPool3 = tf.layers.globalAveragePooling1d().apply(batchNorm3);
+        const attentionPool = tf.layers.globalAveragePooling1d().apply(attention);
+        
+        // Combine all features with concatenation
+        const concatenated = tf.layers.concatenate()
+            .apply([maxPool1, avgPool1, maxPool2, avgPool2, maxPool3, avgPool3, attentionPool]);
+        
+        // First dense layer for feature processing
         const dense1 = tf.layers.dense({
-            units: 192,  
+            units: 128,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
-            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0002 })
+            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
         }).apply(concatenated);
-
-        const batchNorm1 = tf.layers.batchNormalization().apply(dense1);
-        const dropout1 = tf.layers.dropout({ rate: 0.35 }).apply(batchNorm1);
-
+        
+        const batchNorm4 = tf.layers.batchNormalization().apply(dense1);
+        const dropout1 = tf.layers.dropout({ rate: 0.3 }).apply(batchNorm4);
+        
+        // Second dense layer with residual connection
         const dense2 = tf.layers.dense({
-            units: 96,  
+            units: 64,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
-            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0002 })
+            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
         }).apply(dropout1);
-
-        const batchNorm2 = tf.layers.batchNormalization().apply(dense2);
-        const dropout2 = tf.layers.dropout({ rate: 0.25 }).apply(batchNorm2);
-
+        
+        const batchNorm5 = tf.layers.batchNormalization().apply(dense2);
+        const dropout2 = tf.layers.dropout({ rate: 0.25 }).apply(batchNorm5);
+        
+        // Output layer with careful initialization
         const output = tf.layers.dense({
             units: 3,
             activation: 'softmax',
-            kernelInitializer: 'glorotNormal',
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.0001 })
+            kernelInitializer: tf.initializers.glorotUniform(),
+            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
         }).apply(dropout2);
-
+        
         this.model = tf.model({ inputs: input, outputs: output });
-
+        
         const optimizer = tf.train.adam(0.001, 0.9, 0.999, 1e-7);
-
+        
         this.model.compile({
             optimizer: optimizer,
             loss: 'sparseCategoricalCrossentropy',
             metrics: ['accuracy']
         });
     }
-
     async saveModel() {
         try {
             const modelArtifacts = await this.model.save(tf.io.withSaveHandler(async (artifacts) => {
@@ -1187,7 +1374,7 @@ class CrashSeverityClassifier {
             callbacks: [
                 tf.callbacks.earlyStopping({
                     monitor: 'val_loss',
-                    patience: 6,
+                    patience: 7,
                     minDelta: 0.001,
                     verbose: 1,
                     mode: 'min'
@@ -1195,7 +1382,7 @@ class CrashSeverityClassifier {
                 customCallbacks
             ],
             classWeight: classWeights,
-            batchSize: 16
+            batchSize: 32
         });
 
         await this.saveModel();

@@ -507,7 +507,7 @@
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on 52 St and 17 Ave SE. Blocking multi lanes. Please go slow and watch for fellow Calgarians.   #yyctraffic #yycroads https://t.co/fZGoYh8iNs",
     "time": "4:27 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic incident on Metis Tr and 80 Ave NE, blocking the SB left lane.   #yyctraffic #yycroads https://t.co/PM8BjKaDpL",
@@ -567,7 +567,7 @@
   {
     "text": "ALERT:  Emergency services have been called to help a pedestrian involved in an incident on University Dr north of 16 Ave NW. Please go slow and watch for fellow Calgarians.   #yyctraffic #yycroads",
     "time": "3:25 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic incident on  Stoney Tr and 17 Ave SE.   #yyctraffic #yycroads",
@@ -607,7 +607,7 @@
   {
     "text": "ALERT:  Emergency services have been called to help a pedestrian involved in an incident on Rundlehorn Dr and 52 St NE. Blocking the SB right lane. Please go slow and watch for fellow Calgarians   #yyctraffic #yycroads https://t.co/KCrqKxTbfZ",
     "time": "7:45 a.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "EB 16 Ave NE on-ramp to Deerfoot Tr, Calgary - disabled vehicle in the LHL. Expect delays in the area. (7:10am) #ABRoads #yyctraffic",
@@ -1647,7 +1647,7 @@
   {
     "text": "ALERT:  Emergency services have been called to help a pedestrian involved in an incident on Harvest Hills Blvd at Beddington Tr NW. Please go slow and watch for fellow Calgarians.   #yyctraffic #yycroads",
     "time": "10:24 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic incident on  Anderson Rd and Elbow Dr SW.   #yyctraffic #yycroads",
@@ -1777,7 +1777,7 @@
   {
     "text": "ALERT:  Emergency services have been called to help a pedestrian involved in an incident on Prestwick Ga and 52 St SE. Blocking the SB left lane. Please go slow and watch for fellow Calgarians   #yyctraffic #yycroads https://t.co/rMKwiOA1jp",
     "time": "4:27 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "NB Deerfoot Tr at the Calf Robe Bridge SE, Calgary - MVC. Expect delays. (9:58am) #ABRoads #yyctraffic",
@@ -2247,7 +2247,7 @@
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on EB McKnight Bv and Centre St N. Blocking the WB lanes. Please go slow and watch for fellow Calgarians   #yyctraffic #yycroads https://t.co/P9gxR1ps5d",
     "time": "8:08 p.m.",
-    "severity": 2
+    "severity": 1
   },
   {
     "text": "EB Stoney Tr near Sarcee Tr SW, Calgary - MVC. Expect delays in the area. (7:09pm) #ABRoads #yyctraffic",
