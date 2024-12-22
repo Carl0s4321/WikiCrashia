@@ -74,14 +74,7 @@ class CrashSeverityClassifier {
                 ROLLOVER_MULTI_VEHICLE: 2,  
                 JACKKNIFE_MULTI_VEHICLE: 2,  
                 ALL_LANES_EMERGENCY: 2,
-                PEAK_SINGLE_LANE: 2,
-                MAJOR_ROAD_DELAYS: 2
             },
-            TRAFFIC_IMPACT: {
-                severe: 3,
-                moderate: 2,
-                minor: 1
-            }
         }
 
         this.PEAK_TIMES = {
@@ -251,6 +244,7 @@ class CrashSeverityClassifier {
 
     augmentTrainingData(tweets) {
         const augmentedTweets = [];
+        const maxTweets = 45000;
 
         tweets.forEach(tweet => {
 
@@ -275,7 +269,8 @@ class CrashSeverityClassifier {
             }
         });
 
-        return augmentedTweets.sort(() => Math.random() - 0.5);
+        const shuffledTweets = augmentedTweets.sort(() => Math.random() - 0.5);
+        return shuffledTweets.splice(0, maxTweets);
     }
 
     augmentLowSeverity(tweet, cleanedText, locationVariations, augmentedTweets) {
@@ -931,7 +926,6 @@ class CrashSeverityClassifier {
                                     text.includes('emergency');
 
         if (isPedestrianIncident) {
-            // High severity cases for pedestrian incidents
             if (hasEmergencyServices && 
                 (this.LOCATION_KEYWORDS.multiple_lanes.some(keyword => text.includes(keyword)) ||
                 text.includes('all directions') ||
@@ -940,18 +934,15 @@ class CrashSeverityClassifier {
                 text.includes('critical'))) {
                 return 2;
             }
-            
-            // Medium severity cases - this is the default for most pedestrian incidents
+
             if (hasEmergencyServices) {
                 return 1;
             }
-            
-            // Low severity cases
+
             if (text.includes('minor') || text.includes('cleared')) {
                 return 0;
             }
             
-            // If we have a pedestrian incident with no other context, default to medium
             return 1;
         }
 
@@ -1011,8 +1002,6 @@ class CrashSeverityClassifier {
            return 2;
        }
 
-       
-
         if (hasMultipleLanes) {
             locationImpact = this.SEVERITY_WEIGHTS.LOCATION_TYPE.multiple_lanes;
         } else if (hasIntersection) {
@@ -1068,7 +1057,7 @@ class CrashSeverityClassifier {
     
         const embedding = tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
-            outputDim: 96,
+            outputDim: 128,
             maskZero: true,
             embeddingsInitializer: tf.initializers.randomUniform(-0.05, 0.05),
             embeddingsRegularizer: tf.regularizers.l1l2({ l1: 0.0002, l2: 0.0002 })
@@ -1079,7 +1068,7 @@ class CrashSeverityClassifier {
         }).apply(embedding);
 
         const severityConv = tf.layers.conv1d({
-            filters: 32,
+            filters: 64,
             kernelSize: 2,
             padding: 'same',
             activation: 'relu',
@@ -1088,7 +1077,7 @@ class CrashSeverityClassifier {
         }).apply(embeddingDropout);
         
         const contextConv = tf.layers.conv1d({
-            filters: 32,
+            filters: 64,
             kernelSize: 3,
             padding: 'same',
             activation: 'relu',
@@ -1096,9 +1085,8 @@ class CrashSeverityClassifier {
             name: 'context_patterns'
         }).apply(embeddingDropout);
         
-        // Path 3: Broader context patterns (larger window size)
         const broadConv = tf.layers.conv1d({
-            filters: 32,
+            filters: 64,
             kernelSize: 4,
             padding: 'same',
             activation: 'relu',
@@ -1106,12 +1094,11 @@ class CrashSeverityClassifier {
             name: 'broad_patterns'
         }).apply(embeddingDropout);
         
-        // Batch normalization after each convolution to stabilize training
         const batchNorm1 = tf.layers.batchNormalization().apply(severityConv);
         const batchNorm2 = tf.layers.batchNormalization().apply(contextConv);
         const batchNorm3 = tf.layers.batchNormalization().apply(broadConv);
-        
-        // Simple attention mechanism for severity patterns
+
+        // tensorflow js doesn't have attention but can use dense layer instead as a workaround
         const attention = tf.layers.dense({
             units: this.maxSequenceLength,
             useBias: false,
@@ -1119,7 +1106,6 @@ class CrashSeverityClassifier {
             name: 'attention_layer'
         }).apply(batchNorm1);
         
-        // Multiple pooling strategies to capture different aspects of the text
         const maxPool1 = tf.layers.globalMaxPooling1d().apply(batchNorm1);
         const avgPool1 = tf.layers.globalAveragePooling1d().apply(batchNorm1);
         const maxPool2 = tf.layers.globalMaxPooling1d().apply(batchNorm2);
@@ -1128,13 +1114,11 @@ class CrashSeverityClassifier {
         const avgPool3 = tf.layers.globalAveragePooling1d().apply(batchNorm3);
         const attentionPool = tf.layers.globalAveragePooling1d().apply(attention);
         
-        // Combine all features with concatenation
         const concatenated = tf.layers.concatenate()
             .apply([maxPool1, avgPool1, maxPool2, avgPool2, maxPool3, avgPool3, attentionPool]);
         
-        // First dense layer for feature processing
         const dense1 = tf.layers.dense({
-            units: 128,
+            units: 256,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
@@ -1143,9 +1127,8 @@ class CrashSeverityClassifier {
         const batchNorm4 = tf.layers.batchNormalization().apply(dense1);
         const dropout1 = tf.layers.dropout({ rate: 0.3 }).apply(batchNorm4);
         
-        // Second dense layer with residual connection
         const dense2 = tf.layers.dense({
-            units: 64,
+            units: 128,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
@@ -1172,6 +1155,7 @@ class CrashSeverityClassifier {
             metrics: ['accuracy']
         });
     }
+
     async saveModel() {
         try {
             const modelArtifacts = await this.model.save(tf.io.withSaveHandler(async (artifacts) => {
