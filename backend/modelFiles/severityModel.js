@@ -244,7 +244,7 @@ class CrashSeverityClassifier {
 
     augmentTrainingData(tweets) {
         const augmentedTweets = [];
-        const maxTweets = 45000;
+        //const maxTweets = 45000;
 
         tweets.forEach(tweet => {
 
@@ -269,8 +269,7 @@ class CrashSeverityClassifier {
             }
         });
 
-        const shuffledTweets = augmentedTweets.sort(() => Math.random() - 0.5);
-        return shuffledTweets.splice(0, maxTweets);
+        return augmentedTweets.sort(() => Math.random() - 0.5);
     }
 
     augmentLowSeverity(tweet, cleanedText, locationVariations, augmentedTweets) {
