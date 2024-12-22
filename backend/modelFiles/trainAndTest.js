@@ -7140,7 +7140,7 @@ async function testPrint() {
 
 //trainModel();
 //testingLoadingModel();
-testModel();
-//saveTestSet();
+//testModel();
+saveTestSet();
 //testPrint();
 //makeDatasets();

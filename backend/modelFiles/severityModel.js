@@ -73,7 +73,14 @@ class CrashSeverityClassifier {
                 EMERGENCY_WITH_INJURIES: 2,  
                 ROLLOVER_MULTI_VEHICLE: 2,  
                 JACKKNIFE_MULTI_VEHICLE: 2,  
-                ALL_LANES_EMERGENCY: 2
+                ALL_LANES_EMERGENCY: 2,
+                PEAK_SINGLE_LANE: 2,
+                MAJOR_ROAD_DELAYS: 2
+            },
+            TRAFFIC_IMPACT: {
+                severe: 3,
+                moderate: 2,
+                minor: 1
             }
         }
 
@@ -995,6 +1002,17 @@ class CrashSeverityClassifier {
             text.includes(keyword)
         );
 
+    
+        // Last check for MVC
+        if ((roadType === 'major' && 
+            (text.includes('mvc') || text.includes('collision')) && 
+            (hasSingleLane || hasMultipleLanes || this.isPeakTime(hour))) ||
+           (hasCriticalKeywords.collision && hasCriticalKeywords.multiVehicle)) {
+           return 2;
+       }
+
+       
+
         if (hasMultipleLanes) {
             locationImpact = this.SEVERITY_WEIGHTS.LOCATION_TYPE.multiple_lanes;
         } else if (hasIntersection) {
@@ -1047,10 +1065,7 @@ class CrashSeverityClassifier {
 
     async createModel() {
         const input = tf.input({shape: [this.maxSequenceLength]});
-        
-        // Enhanced embedding layer with careful initialization and regularization
-        // We use a moderate output dimension (96) to balance between feature capture and overfitting
-        // The random uniform initialization helps prevent large initial weights
+    
         const embedding = tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
             outputDim: 96,
@@ -1059,16 +1074,10 @@ class CrashSeverityClassifier {
             embeddingsRegularizer: tf.regularizers.l1l2({ l1: 0.0002, l2: 0.0002 })
         }).apply(input);
         
-        // Spatial dropout helps prevent overfitting at the embedding level
-        // We use a moderate rate of 0.15 to maintain important semantic information
         const embeddingDropout = tf.layers.spatialDropout1d({ 
             rate: 0.2
         }).apply(embedding);
-        
-        // Three parallel convolution paths for different aspects of the text
-        // Each focuses on a different semantic level
-        
-        // Path 1: Severity patterns (smaller window size)
+
         const severityConv = tf.layers.conv1d({
             filters: 32,
             kernelSize: 2,
@@ -1078,7 +1087,6 @@ class CrashSeverityClassifier {
             name: 'severity_patterns'
         }).apply(embeddingDropout);
         
-        // Path 2: Location and context patterns (medium window size)
         const contextConv = tf.layers.conv1d({
             filters: 32,
             kernelSize: 3,

@@ -1,9 +1,5 @@
 const tweets = [
   {
-    "text": "",
-    "time": ""
-  },
-  {
     "text": "ALERT: Traffic incident on 53 St and 146 Ave SW. Expect delays in the area. #yyctraffic #yycroads",
     "time": "5:29 p.m."
   },

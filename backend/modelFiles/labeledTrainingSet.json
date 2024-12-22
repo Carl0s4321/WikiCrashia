@@ -22,7 +22,7 @@
   {
     "text": "ALERT: Traffic incident on SB Stoney Tr approaching 96 Ave NE, blocking the left lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/Wehtwg2yzo",
     "time": "4:30 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on 84 St and Peigan Tr SE.  #yyctraffic #yycroads https://t.co/oPLAGGDVbR",
@@ -87,7 +87,7 @@
   {
     "text": "In the Northeast, watch out for spun out vehicles on EB Stoney Trail just east of Harvest Hills Blvd, blocking the right-hand lane #yyctraffic https://t.co/w90O2NDY0t",
     "time": "4:39 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "NB Deerfoot Trail approaching 17th Ave, Calgary - MVC, blocking the LH lane. (4:25pm) via @yyctransport #yyctraffic",
@@ -127,12 +127,12 @@
   {
     "text": "In the Southwest, stalled vehicle on WB Glenmore Trail at 37th Street, blocking the middle lane, expect major backups #yyctraffic https://t.co/btN0kx0rZK",
     "time": "5:48 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "In the Southeast, watch out for a new crash on NB Deerfoot Trail approaching 17th Avenue, blocking the right-hand lane #yyctraffic https://t.co/IIslRuLGgG",
     "time": "5:04 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Multi-vehicle incident on  EB Stoney Tr and Harvest Hills Bv NE, blocking the right shoulder.   #yyctraffic #yycroads https://t.co/gRA5vFlvbG",
@@ -142,7 +142,7 @@
   {
     "text": "In the Northeast, watch out for a crash on WB McKnight Blvd at Deerfoot Trail, blocking the right-hand lane #yyctraffic https://t.co/GNnxAhhQHy",
     "time": "4:19 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  Saddletowne Ci and 60 St NE.   #yyctraffic #yycroads",
@@ -157,7 +157,7 @@
   {
     "text": "In the Southeast, watch out for a crash on NB Deerfoot Trail approaching 17th Avenue, blocking the left-hand lane #yyctraffic https://t.co/gcDYFgxgsT",
     "time": "4:17 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  WB McKnight Bv and Deerfoot Tr NE, blocking the right lane.   #yyctraffic #yycroads https://t.co/MNv7LH4E8t",
@@ -247,7 +247,7 @@
   {
     "text": "Good Morning! There's some improvement on the roads. Still lots of slippery sections plus there's a collision in the SW, 14th Street and Glenmore Trail WB, blocking the left lane. #yyctraffic #yycroads https://t.co/9ZZomOmuaN",
     "time": "5:54 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on WB 16 Ave approaching Sarcee Tr NW.   #yyctraffic #yycroads",
@@ -282,7 +282,7 @@
   {
     "text": "In the Southeast, watch out for a crash on EB Southland Drive at Deerfoot Trail, blocking the right-hand lane #yyctraffic https://t.co/n3FFrTZhmY",
     "time": "4:33 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  Shawville Bv and Shalom Wy SE.   #yyctraffic #yycroads",
@@ -482,7 +482,7 @@
   {
     "text": "ALERT: Traffic incident on  52 St and 28 Ave SE. Expect delays in the area. #yyctraffic #yycroads",
     "time": "4:07 p.m.",
-    "severity": 0
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic signals are flashing red on 29 St and Hospital Dr NW; crews have been dispatched. Please drive with caution. #yyctraffic #yycroads",
@@ -612,7 +612,7 @@
   {
     "text": "EB 16 Ave NE on-ramp to Deerfoot Tr, Calgary - disabled vehicle in the LHL. Expect delays in the area. (7:10am) #ABRoads #yyctraffic",
     "time": "7:10 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on Country Hills Bv and Coventry Bv NE, blocking multi lanes.   #yyctraffic #yycroads https://t.co/0HeIe5T90e",
@@ -842,7 +842,7 @@
   {
     "text": "ALERT: Traffic incident on  NB Deerfoot Tr SE at the Calf Robe Bridge, blocking the left lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/VcHqtPxOnn",
     "time": "7:25 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Multi-vehicle incident on  NB Deerfoot Tr north of Peigan Tr SE, blocking the left shoulder. Expect delays in the area. #yyctraffic #yycroads https://t.co/lfuGPESoLJ",
@@ -1142,7 +1142,7 @@
   {
     "text": "ALERT: Traffic incident on EB Beddington Tr at Hidden Valley Li NW, blocking the right lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/hNJ9q41dmT",
     "time": "10:18 a.m.",
-    "severity": 0
+    "severity": 1
   },
   {
     "text": "ALERT: Traffic incident on  61 Ave and 44 St SE.   #yyctraffic #yycroads",
@@ -1162,12 +1162,12 @@
   {
     "text": "In the NE, SB Deerfoot Trail at 32nd Avenue, a collision in the left lane. #yyctraffic #yycroads https://t.co/VnPIKhyWUU",
     "time": "6:37 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "In the NE, NB Deerfoot at McKnight Blvd, emergency vehicles in the right lane due to a collision. #yyctraffic #yycroads https://t.co/v1MJBKrQSJ",
     "time": "6:35 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Two vehicle incident on  WB Heritage Dr and Bonaventure Dr SE, blocking the right lane.   #yyctraffic #yycroads https://t.co/2YFPpfRRm3",
@@ -1212,7 +1212,7 @@
   {
     "text": "In the NE, NB Metis Trail approaching Stoney Trail, a collision blocking the right lane. #yyctraffic #yycroads https://t.co/u58DcwGvX1",
     "time": "7:56 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "NB Deerfoot Tr at McKnight Blvd NE, Calgary - MVC affecting the LHL. (6:13am) #ABRoads #yyctraffic",
@@ -1442,7 +1442,7 @@
   {
     "text": "In the NW, NB Crowchild Trail at Bow Trail, slowdowns due to a collision. Backed up to Glenmore Trail. #yyctraffic #yycroads https://t.co/wIAAkzXvY3",
     "time": "8:06 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  Heritage Dr and 11 St SE.   #yyctraffic #yycroads",
@@ -1497,7 +1497,7 @@
   {
     "text": "ALERT: Traffic incident on NB Deerfoot Tr at Anderson Rd SE, blocking the right lane. There are considerable backups in the area. #yyctraffic #yycroads https://t.co/OUXUoGxu2m",
     "time": "7:13 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "NB Deerfoot Tr approaching Airport Tr NE, Calgary -  traffic incident, blocking the RH lane. (6:55am) via @yyctransport #yyctraffic",
@@ -1542,7 +1542,7 @@
   {
     "text": "In the Northwest, a crash on SB Crowchild Trail just past 16th Avenue causing backups #yyctraffic https://t.co/IQEobYCIqF",
     "time": "6:28 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Single vehicle incident on NB 52 St after 114 Ave SE, blocking the right lane.   #yyctraffic #yycroads https://t.co/dNSo43kqx0",
@@ -1557,7 +1557,7 @@
   {
     "text": "ALERT: Traffic incident on  SB Deerfoot Tr approaching Stoney Tr SE, blocking the right lanes. Expect delays in the area. #yyctraffic #yycroads https://t.co/8qJEFGolxG",
     "time": "5:35 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT:  Emergency services are helping a pedestrian involved in an incident on 3 St at 7 Ave SE. Bocking the NB right lane. Please go slow and watch for fellow Calgarians   #yyctraffic #yycroads https://t.co/KNsyv8ZVk4",
@@ -1572,12 +1572,12 @@
   {
     "text": "ALERT: Traffic incident on  NB Deerfoot Tr approaching McKnight Bv NE, blocking the left lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/fqHhefxd6W",
     "time": "6:35 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "In the Northeast, a stalled vehicle on NB Deerfoot Trail approaching McKnight Blvd is blocking the left-hand lane, expect delays #yyctraffic https://t.co/7LmaSN9hMd",
     "time": "6:18 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "CLEARED: The earlier incident on  3 St at 7 Ave SE has cleared. #yyctraffic #yycroads",
@@ -1657,7 +1657,7 @@
   {
     "text": "ALERT: Traffic incident on  SB Deerfoot Tr approaching Peigan Tr SE, blocking the right lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/A3NAoCnJuw",
     "time": "4:58 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "SB Deerfoot Trail off Ramp to Peigan Trail, Calgary, bridge repairs, Nov.4, 9pm-5am. Expect right lane closure and speed reduced to 50km/h. (4:36pm) #ABRoads #yyctraffic",
@@ -2082,7 +2082,7 @@
   {
     "text": "In the Southeast, watch out for a crash on EB Glenmore Trail at the Graves Bridge east of Deerfoot Trail, blocking the left-hand and right-hand lanes #yyctraffic https://t.co/yv2j9Nso9g",
     "time": "4:09 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  EB Glenmore Tr and 18 St SE, blocking the right lane.   #yyctraffic #yycroads https://t.co/23OPQpPlFC",
@@ -2102,7 +2102,7 @@
   {
     "text": "In the Southeast, crash on EB Heritage Drive over top of Deerfoot Trail, blocking the left-hand lane #yyctraffic https://t.co/OjquWXYtpz",
     "time": "5:27 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  Heritage Dr East of 11 St SE.   #yyctraffic #yycroads https://t.co/HC5cn8c4CF",
@@ -2157,7 +2157,7 @@
   {
     "text": "In the Southeast, crash on WB Glenmore Trail at Blackfoot Trail, blocking the right-hand lane #yyctraffic https://t.co/k6Sscl3H3p",
     "time": "5:21 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "In the Northwest, watch out for a crash on 64th Avenue at 14th Street, blocking the EB RHL and the turn lane from NB 14th #yyctraffic https://t.co/QVhxVaTJV0",
@@ -2302,7 +2302,7 @@
   {
     "text": "In the NE, there's collision at 16th Avenue and Deerfoot Trail, blocking SB and EB lanes. #yyctraffic #yycroads https://t.co/5v59jdp6Xa",
     "time": "8:25 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  SB 36 St and 32 Ave NE, blocking multiple lanes.   #yyctraffic #yycroads https://t.co/rO0RJkeZHV",
@@ -2322,7 +2322,7 @@
   {
     "text": "In the Southeast, watch out for a crash on EB Glenmore Trail at Deerfoot Trail, blocking the right-hand lane #yyctraffic https://t.co/pW0KqNJQm2",
     "time": "4:25 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "ALERT: Traffic incident on  East Hills Bv and 84 St SE.   #yyctraffic #yycroads",
@@ -2477,7 +2477,7 @@
   {
     "text": "In the Southeast, crews dealing with a crash on WB Stoney Trail just west of 52nd Street, blocking the right-hand lanes #yyctraffic https://t.co/qpA6EjcyWf",
     "time": "6:59 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "In the Northeast, watch out for a stalled vehicle on SB 36th Street at Memorial Drive, blocking the right-hand lane of the turn lane to EB Memorial #yyctraffic https://t.co/WA1qiAWq5k",
@@ -2557,16 +2557,16 @@
   {
     "text": "ALERT: Traffic incident on SB Deerfoot Tr at Glenmore Tr SE, blocking the right lane. Expect delays in the area. #yyctraffic #yycroads https://t.co/yo5BG0OPyd",
     "time": "7:48 a.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "East of the city, there's a crash on Glenmore Trail at Range Rd 284. Traffic is taking turns getting through EB and WB, expect delays #yyctraffic https://t.co/xfnNLRp4XT",
     "time": "6:50 p.m.",
-    "severity": 1
+    "severity": 2
   },
   {
     "text": "NB Deerfoot Tr at 212 Ave SE, in Calgary - traffic incident, expect delays in the area. (6:03am) via @yyctransport #yyctraffic",
     "time": "6:03 a.m.",
-    "severity": 0
+    "severity": 1
   }
 ]
