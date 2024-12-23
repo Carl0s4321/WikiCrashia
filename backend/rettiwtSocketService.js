@@ -181,8 +181,8 @@ class RettiwtSocketService {
             const searchParams = {
                 hashtags:["yyctraffic", "yycroads"],
                 excludeWords: ["CLEAR", "Update"],
-                startDate: new Date('2024-11-1'), 
-                
+                startDate: new Date('2024-12-20'), 
+                endDate: new Date('2024-12-21')
             };
 
             if (this.lastId) {

@@ -2,6 +2,7 @@ const express = require('express');
 const database = require('./connect');
 const ObjectId = require('mongodb').ObjectId;
 const { convertToDate } = require('./dateConverter');
+const { request } = require('@huggingface/inference');
 
 let crashRoutes = express.Router();
 const CRASHES_COLLECTION_NAME = "crashes";
@@ -44,5 +45,6 @@ crashRoutes.route('/crashes/updateDates').post(async (request, response) => {
         response.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 module.exports = crashRoutes;
