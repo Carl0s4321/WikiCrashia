@@ -190,7 +190,7 @@ class RettiwtSocketService {
             }
 
             const tweets = await this.rettiwt.tweet.search(searchParams);
-            console.log(tweets);
+            // console.log(tweets);
             this.requestCount++;
 
             if (tweets.list.length > 0) {
