@@ -67,14 +67,6 @@ class CrashSeverityClassifier {
                 major: 3,       
                 moderate: 2,    
             },
-            COMBINATIONS: {
-                MULTI_MAJOR_ROADS: 3,         
-                MAJOR_SKELETAL_COMBO: 2,       
-                EMERGENCY_WITH_INJURIES: 2,  
-                ROLLOVER_MULTI_VEHICLE: 2,  
-                JACKKNIFE_MULTI_VEHICLE: 2,  
-                ALL_LANES_EMERGENCY: 2,
-            },
         }
 
         this.PEAK_TIMES = {
@@ -182,13 +174,6 @@ class CrashSeverityClassifier {
                 'flat tire', 'vehicle stopped'
             ]
         };
-
-        this.CRITICAL_COMBINATIONS = [
-            ['rollover', 'injuries'],
-            ['multiple vehicles', 'emergency'],
-            ['jackknife', 'blocked'],
-            ['collision', 'serious injuries']
-        ];
 
         if (!fsSync.existsSync(this.modelSavePath)) {
             fsSync.mkdirSync(this.modelSavePath, { recursive: true });
@@ -950,7 +935,6 @@ class CrashSeverityClassifier {
         severityScore += roadScore;
 
         const hasCriticalKeywords = {
-
             collision: this.INCIDENT_KEYWORDS.critical.some(keyword => text.includes(keyword)),
             emergency: text.includes('emergency') || text.includes('ems') || 
                       text.includes('crews responding') || text.includes('ambulance'),
@@ -1019,24 +1003,8 @@ class CrashSeverityClassifier {
             incidentScore = this.SEVERITY_WEIGHTS.INCIDENT_TYPE.moderate;
         }
         severityScore += incidentScore;
-
-        if (roadType === 'major' && hasMultipleLanes) {
-            severityScore += this.SEVERITY_WEIGHTS.COMBINATIONS.MAJOR_SKELETAL_COMBO;
-        }
-
-        if (severityScore >= 15 || 
-            (roadType === 'major' && hasMultipleLanes && incidentScore >= this.SEVERITY_WEIGHTS.INCIDENT_TYPE.major) ||
-            (text.includes('mvc') && roadType === 'major')) {
-            return 2;
-        }
-
-        if (severityScore >= 9 ||
-            (roadType === 'major' && hasSingleLane) ||
-            (hasMultipleLanes && (roadType === 'major' || roadType === 'skeletal'))) {
-            return 1;
-        }
-
-        return 0;
+        
+        5
     }
 
     prepTrainingData(tweets) {
@@ -1052,50 +1020,50 @@ class CrashSeverityClassifier {
     }
 
     async createModel() {
-        const input = tf.input({shape: [this.maxSequenceLength]});
+        const inputLayer = tf.input({shape: [this.maxSequenceLength]});
     
-        const embedding = tf.layers.embedding({
+        const wordEmbeddingLayer = tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
             outputDim: 128,
             maskZero: true,
             embeddingsInitializer: tf.initializers.randomUniform(-0.05, 0.05),
             embeddingsRegularizer: tf.regularizers.l1l2({ l1: 0.0002, l2: 0.0002 })
-        }).apply(input);
+        }).apply(inputLayer);
         
-        const embeddingDropout = tf.layers.spatialDropout1d({ 
+        const wordEmbeddingDropout = tf.layers.spatialDropout1d({ 
             rate: 0.2
-        }).apply(embedding);
+        }).apply(wordEmbeddingLayer);
 
-        const severityConv = tf.layers.conv1d({
+        const immediateLayer = tf.layers.conv1d({
             filters: 64,
             kernelSize: 2,
             padding: 'same',
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             name: 'severity_patterns'
-        }).apply(embeddingDropout);
+        }).apply(wordEmbeddingDropout);
         
-        const contextConv = tf.layers.conv1d({
+        const situationalLayer = tf.layers.conv1d({
             filters: 64,
             kernelSize: 3,
             padding: 'same',
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             name: 'context_patterns'
-        }).apply(embeddingDropout);
+        }).apply(wordEmbeddingDropout);
         
-        const broadConv = tf.layers.conv1d({
+        const broaderLayer = tf.layers.conv1d({
             filters: 64,
             kernelSize: 4,
             padding: 'same',
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             name: 'broad_patterns'
-        }).apply(embeddingDropout);
+        }).apply(wordEmbeddingDropout);
         
-        const batchNorm1 = tf.layers.batchNormalization().apply(severityConv);
-        const batchNorm2 = tf.layers.batchNormalization().apply(contextConv);
-        const batchNorm3 = tf.layers.batchNormalization().apply(broadConv);
+        const normImmediate = tf.layers.batchNormalization().apply(immediateLayer);
+        const normSituational = tf.layers.batchNormalization().apply(situationalLayer);
+        const normBroader = tf.layers.batchNormalization().apply(broaderLayer);
 
         // tensorflow js doesn't have attention but can use dense layer instead as a workaround
         const attention = tf.layers.dense({
@@ -1103,48 +1071,47 @@ class CrashSeverityClassifier {
             useBias: false,
             activation: 'tanh',
             name: 'attention_layer'
-        }).apply(batchNorm1);
+        }).apply(normImmediate);
         
-        const maxPool1 = tf.layers.globalMaxPooling1d().apply(batchNorm1);
-        const avgPool1 = tf.layers.globalAveragePooling1d().apply(batchNorm1);
-        const maxPool2 = tf.layers.globalMaxPooling1d().apply(batchNorm2);
-        const avgPool2 = tf.layers.globalAveragePooling1d().apply(batchNorm2);
-        const maxPool3 = tf.layers.globalMaxPooling1d().apply(batchNorm3);
-        const avgPool3 = tf.layers.globalAveragePooling1d().apply(batchNorm3);
-        const attentionPool = tf.layers.globalAveragePooling1d().apply(attention);
+        const maxFeaturesImmediate = tf.layers.globalMaxPooling1d().apply(normImmediate);
+        const avgFeaturesImmediate = tf.layers.globalAveragePooling1d().apply(normImmediate);
+        const maxFeaturesSituational = tf.layers.globalMaxPooling1d().apply(normSituational);
+        const avgFeaturesSituational = tf.layers.globalAveragePooling1d().apply(normSituational);
+        const maxFeaturesBroader = tf.layers.globalMaxPooling1d().apply(normBroader);
+        const avgFeaturesBroader = tf.layers.globalAveragePooling1d().apply(normBroader);
+        const keywordFeatures = tf.layers.globalAveragePooling1d().apply(attention);
         
-        const concatenated = tf.layers.concatenate()
-            .apply([maxPool1, avgPool1, maxPool2, avgPool2, maxPool3, avgPool3, attentionPool]);
+        const combinedFeatures = tf.layers.concatenate()
+            .apply([maxFeaturesImmediate, avgFeaturesImmediate, maxFeaturesSituational, avgFeaturesSituational, maxFeaturesBroader, avgFeaturesBroader, keywordFeatures]);
         
-        const dense1 = tf.layers.dense({
+        const featureLayer1 = tf.layers.dense({
             units: 256,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
-        }).apply(concatenated);
+        }).apply(combinedFeatures);
         
-        const batchNorm4 = tf.layers.batchNormalization().apply(dense1);
-        const dropout1 = tf.layers.dropout({ rate: 0.3 }).apply(batchNorm4);
+        const normFeatureLayer1 = tf.layers.batchNormalization().apply(featureLayer1);
+        const dropoutFeatures1 = tf.layers.dropout({ rate: 0.3 }).apply(normFeatureLayer1);
         
-        const dense2 = tf.layers.dense({
+        const featureLayer2 = tf.layers.dense({
             units: 128,
             activation: 'relu',
             kernelInitializer: 'glorotUniform',
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
-        }).apply(dropout1);
+        }).apply(dropoutFeatures1);
         
-        const batchNorm5 = tf.layers.batchNormalization().apply(dense2);
-        const dropout2 = tf.layers.dropout({ rate: 0.25 }).apply(batchNorm5);
+        const normFeatureLayer2 = tf.layers.batchNormalization().apply(featureLayer2);
+        const dropoutFeatures2 = tf.layers.dropout({ rate: 0.25 }).apply(normFeatureLayer2);
         
-        // Output layer with careful initialization
-        const output = tf.layers.dense({
+        const outputLayer = tf.layers.dense({
             units: 3,
             activation: 'softmax',
             kernelInitializer: tf.initializers.glorotUniform(),
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
-        }).apply(dropout2);
+        }).apply(dropoutFeatures2);
         
-        this.model = tf.model({ inputs: input, outputs: output });
+        this.model = tf.model({ inputs: inputLayer, outputs: outputLayer });
         
         const optimizer = tf.train.adam(0.001, 0.9, 0.999, 1e-7);
         
@@ -1304,14 +1271,6 @@ class CrashSeverityClassifier {
         const xTensor = tf.tensor2d(trainingData.sequences);
         const yTensor = tf.tensor1d(trainingData.labels);
 
-        const initialLearningRate = 0.0005;
-        const minimumLearningRate = 0.00001;
-        const earlyDecayRate = 0.97;
-        const midDecayRate = 0.93;
-        const laterDecayRate = 0.90;
-        let currentLearningRate = initialLearningRate;
-        let decayFactor = 0;
-
         const classWeights = this.calculateClassWeight(augmentedTweets);
         console.log('Class weights:', classWeights);
 
@@ -1351,12 +1310,6 @@ class CrashSeverityClassifier {
                 console.log(`Epoch ${epoch + 1}: Learning rate = ${learningRate.toFixed(6)}`);
             }
         });
-
-        const custom = {
-            onEpochEnd: async (epoch, logs) => {
-                console.log(`Epoch ${epoch + 1}:    accuracy = ${logs.acc.toFixed(4)}`);
-            }
-        }
 
         const history = await this.model.fit(xTensor, yTensor, {
             epochs: epochs,
