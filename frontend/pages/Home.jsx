@@ -4,10 +4,10 @@ import {
   Map,
   AdvancedMarker,
   Pin,
-  InfoWindow,
 } from "@vis.gl/react-google-maps";
 import Slider from "../components/Slider";
 import { useDateStore } from "../src/store/dateStore";
+import { FeedFloat } from "../components/FeedComponents/FeedFloat";
 
 export function Home() {
   const { date } = useDateStore();
@@ -23,7 +23,6 @@ export function Home() {
       try {
         const response = await fetch("http://localhost:3000/crashes");
         const data = await response.json();
-        // console.log("Fetched crash data:", data);
         setCrashes(data);
       } catch (error) {
         console.error("Error fetching crash data:", error);
@@ -34,7 +33,6 @@ export function Home() {
   }, []);
 
   useEffect(() => {
-    console.log("DATE", date);
     if (date.startDate || date.endDate) {
       const filtered = crashes.filter((crash) => {
         const crashDate = new Date(crash.date);
@@ -77,10 +75,7 @@ export function Home() {
               <AdvancedMarker
                 key={crash._id}
                 position={{ lat: location.lat, lng: location.lng }}
-                onClick={() => {
-                    
-                  setSelectedCrash(crash);
-                }}
+                onClick={() => setSelectedCrash(crash)}
               >
                 <Pin
                   background={"red"}
@@ -92,31 +87,15 @@ export function Home() {
           })}
 
           {selectedCrash && (
-            <InfoWindow
-              position={{
-                lat: selectedCrash.location.lat,
-                lng: selectedCrash.location.lng,
-              }}
-              onCloseClick={() => {
-                console.log('SELECTED CRASH', selectedCrash)
-                setSelectedCrash(null)}}
-            >
-              <div>
-                <p>
-                  <strong>Address:</strong>{" "}
-                  {selectedCrash.location.formattedAddress}
-                </p>
-                <p>
-                  <strong>Date:</strong> {selectedCrash.date}
-                </p>
-                <p>
-                  <strong>Time:</strong> {selectedCrash.time}
-                </p>
-              </div>
-            </InfoWindow>
+            <FeedFloat
+              selectedCrash={selectedCrash}
+              setSelectedCrash={setSelectedCrash}
+            />
           )}
         </Map>
-        <Slider />
+        <div>
+          <Slider />
+        </div>
       </div>
     </APIProvider>
   );

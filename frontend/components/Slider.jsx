@@ -23,7 +23,7 @@ export default function Slider() {
   }
 
   useEffect(() => {
-    console.log("STATE", state);
+    // console.log("STATE", state);
     setDate({
       startDate: state[0].startDate,
       endDate: state[0].endDate,

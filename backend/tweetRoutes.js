@@ -134,7 +134,7 @@ tweetRoutes.route('/tweets/:id').get(async (req, res) => {
 tweetRoutes.route('/tweets/crash/:id').get(async(req,res)=> {
     try{
         const db = database.getDb()
-        const tweet = await db.collection(TWEET_COLLECTION_NAME).find({crash_id: req.params.id})
+        const tweet = await db.collection(TWEET_COLLECTION_NAME).find({crash_id: new ObjectId(req.params.id)}).toArray()
         
         if(tweet){
             res.status(200).json(tweet)
