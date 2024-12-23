@@ -20,6 +20,7 @@ export async function getUser(id) {
         return
     }
 }
+
 export async function createUser(user) {
     const response = await axios.post(`${URL}/users`, user);
     return response;
@@ -46,5 +47,10 @@ export async function processTweetBatch(tweets) {
             'Content-Type': 'application/json', 
         }
     });
+    return response
+}
+
+export async function fetchCrashTweets(crash_id) {
+    const response = await axios.get(`${URL}/tweets/crash/${crash_id}`);
     return response
 }

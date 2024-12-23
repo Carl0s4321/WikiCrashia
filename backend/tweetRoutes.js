@@ -9,10 +9,11 @@ let tweetRoutes = express.Router();
 const TWEET_COLLECTION_NAME = "tweets"
 const CRASH_COLLECTION_NAME = "crashes"
 
+// dangerous
 async function clearColl(db){
     try{
-        const deleteAll = await db.collection(CRASH_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('673e7b0f654b2c6b54a85172')}})
-        const deleteAll2 = await db.collection(TWEET_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('6700b50bb2c1f5a21ddf086d')}})
+        // const deleteAll = await db.collection(CRASH_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('673e7b0f654b2c6b54a85172')}})
+        // const deleteAll2 = await db.collection(TWEET_COLLECTION_NAME).deleteMany({_id: {$ne: new ObjectId('6700b50bb2c1f5a21ddf086d')}})
     }catch(e){
         throw e
     }
@@ -27,9 +28,6 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
     const tweets = req.body.tweets
     const db = database.getDb();
 
-
-    //  dangerous
-    // clearColl(db)
 
 
     try{
@@ -131,6 +129,23 @@ tweetRoutes.route('/tweets/:id').get(async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+// get all tweets related to the crash
+tweetRoutes.route('/tweets/crash/:id').get(async(req,res)=> {
+    try{
+        const db = database.getDb()
+        const tweet = await db.collection(TWEET_COLLECTION_NAME).find({crash_id: new ObjectId(req.params.id)}).toArray()
+        
+        if(tweet){
+            res.status(200).json(tweet)
+        }else{
+            error('No valid tweets to fetch.', 404)
+        }
+    } catch(error){
+        console.error(error.message);
+        res.status(error.status).json({ message: "Internal server error" });
+    }
+})
 
 // // make CRUD operations:
 // // retrieve all
