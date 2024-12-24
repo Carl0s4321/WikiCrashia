@@ -8,6 +8,7 @@ const crashRoutes = require('./crashRoutes');
 const { createServer } = require("http");
 const { Server } = require('socket.io')
 const RettiwtSocketService = require('./rettiwtSocketService');
+const loadClassifier = require('./loadClassifier');
 
 const app = express();
 const PORT = 3000;
@@ -35,19 +36,29 @@ io.on('connection', (socket) => {
     });
 });
 
-
 const startServer = async () => {
 
     await connect.connectToServer();
     const rettiwtService = new RettiwtSocketService(io);
     app.set('rettiwtService', rettiwtService);
 
-    await rettiwtService.start();
+    try {
+        classifier = await loadClassifier();
+    } catch (error) {
+        console.log("Couldn't load model: ", error);
+    }
+
+
+    await rettiwtService.start(classifier);
     rettiwtService.printTweets();
 
     httpServer.listen(PORT, async () => {
         console.log(`server connected to port ${PORT}`);
     }); 
+
+   
+
+   
 }
 
 try {
