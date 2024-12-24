@@ -1,5 +1,5 @@
 const natural = require('natural');
-const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
@@ -1003,24 +1003,39 @@ class CrashSeverityClassifier {
             incidentScore = this.SEVERITY_WEIGHTS.INCIDENT_TYPE.moderate;
         }
         severityScore += incidentScore;
-        
-        5
+
+        if (severityScore >= 15 || 
+            (roadType === 'major' && hasMultipleLanes && incidentScore >= this.SEVERITY_WEIGHTS.INCIDENT_TYPE.major) ||
+            (text.includes('mvc') && roadType === 'major')) {
+            return 2;
+        }
+
+        if (severityScore >= 9 ||
+            (roadType === 'major' && hasSingleLane) ||
+            (hasMultipleLanes && (roadType === 'major' || roadType === 'skeletal'))) {
+            return 1;
+        }
+
+        return 0;
     }
 
     prepTrainingData(tweets) {
         this.buildVocabulary(tweets);
 
         const sequences = tweets.map(tweet => this.textToSequence(tweet.text));
+        const times = tweets.map(tweet => [this.parseTime(tweet.time)]);
         const labels = tweets.map(tweet => this.assessIncidentSeverity(tweet));
 
         return {
             sequences: sequences,
+            times: times,
             labels: labels
         };
     }
 
     async createModel() {
         const inputLayer = tf.input({shape: [this.maxSequenceLength]});
+        const timeInput = tf.input({shape: [1]});
     
         const wordEmbeddingLayer = tf.layers.embedding({
             inputDim: this.vocabulary.size + 1,
@@ -1033,6 +1048,13 @@ class CrashSeverityClassifier {
         const wordEmbeddingDropout = tf.layers.spatialDropout1d({ 
             rate: 0.2
         }).apply(wordEmbeddingLayer);
+
+        // For time
+        const timeEncoding = tf.layers.dense({
+            units: 32,
+            activation: 'relu',
+            kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
+        }).apply(timeInput);
 
         const immediateLayer = tf.layers.conv1d({
             filters: 64,
@@ -1061,6 +1083,7 @@ class CrashSeverityClassifier {
             name: 'broad_patterns'
         }).apply(wordEmbeddingDropout);
         
+        const normalizedTimeEncoding = tf.layers.batchNormalization().apply(timeEncoding);
         const normImmediate = tf.layers.batchNormalization().apply(immediateLayer);
         const normSituational = tf.layers.batchNormalization().apply(situationalLayer);
         const normBroader = tf.layers.batchNormalization().apply(broaderLayer);
@@ -1082,7 +1105,7 @@ class CrashSeverityClassifier {
         const keywordFeatures = tf.layers.globalAveragePooling1d().apply(attention);
         
         const combinedFeatures = tf.layers.concatenate()
-            .apply([maxFeaturesImmediate, avgFeaturesImmediate, maxFeaturesSituational, avgFeaturesSituational, maxFeaturesBroader, avgFeaturesBroader, keywordFeatures]);
+            .apply([maxFeaturesImmediate, avgFeaturesImmediate, maxFeaturesSituational, avgFeaturesSituational, maxFeaturesBroader, avgFeaturesBroader, keywordFeatures, normalizedTimeEncoding]);
         
         const featureLayer1 = tf.layers.dense({
             units: 256,
@@ -1111,7 +1134,7 @@ class CrashSeverityClassifier {
             kernelRegularizer: tf.regularizers.l1l2({ l1: 0.0001, l2: 0.0001 })
         }).apply(dropoutFeatures2);
         
-        this.model = tf.model({ inputs: inputLayer, outputs: outputLayer });
+        this.model = tf.model({ inputs: [inputLayer, timeInput], outputs: outputLayer });
         
         const optimizer = tf.train.adam(0.001, 0.9, 0.999, 1e-7);
         
@@ -1268,7 +1291,8 @@ class CrashSeverityClassifier {
         const trainingData = this.prepTrainingData(augmentedTweets);
         await this.createModel();
 
-        const xTensor = tf.tensor2d(trainingData.sequences);
+        const xTextTensor = tf.tensor2d(trainingData.sequences);
+        const xTimeTensor = tf.tensor2d(trainingData.times)
         const yTensor = tf.tensor1d(trainingData.labels);
 
         const classWeights = this.calculateClassWeight(augmentedTweets);
@@ -1311,7 +1335,7 @@ class CrashSeverityClassifier {
             }
         });
 
-        const history = await this.model.fit(xTensor, yTensor, {
+        const history = await this.model.fit([xTextTensor, xTimeTensor], yTensor, {
             epochs: epochs,
             validationSplit: 0.2,
             shuffle: true,
@@ -1330,21 +1354,22 @@ class CrashSeverityClassifier {
         });
 
         await this.saveModel();
-        xTensor.dispose();
-        yTensor.dispose();
-        tf.dispose([xTensor, yTensor]);
+        tf.dispose([xTextTensor, xTimeTensor, yTensor]);
 
         return history;
     }
 
-    async predict(tweet) {
-        const sequence = this.textToSequence(tweet.text);
-        const inputTensor = tf.tensor2d([sequence]);
-
-        const prediction = await this.model.predict(inputTensor).array();
-        inputTensor.dispose();
+    async predict(text, time) {
+        const sequence = this.textToSequence(text);
+        const hour = [this.parseTime(time)];
+        
+        const textTensor = tf.tensor2d([sequence]);
+        const timeTensor = tf.tensor2d([hour]);
+    
+        const prediction = await this.model.predict([textTensor, timeTensor]).array();
+        
+        tf.dispose([textTensor, timeTensor]);
         return prediction[0];
-
     }
 
 }

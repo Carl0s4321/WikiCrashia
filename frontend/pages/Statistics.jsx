@@ -229,10 +229,10 @@ export function Statistics() {
     const xRange = xMax - xMin;
     const yRange = yMax - yMin;
 
-    const newXMin = xMin - deltaX * (xRange / 600); 
-    const newXMax = xMax - deltaX * (xRange / 600);
-    const newYMin = yMin + deltaY * (yRange / 500); 
-    const newYMax = yMax + deltaY * (yRange / 500);
+    let newXMin = xMin - deltaX * (xRange / 600); 
+    let newXMax = xMax - deltaX * (xRange / 600);
+    let newYMin = yMin + deltaY * (yRange / 500); 
+    let newYMax = yMax + deltaY * (yRange / 500);
 
     if (newXMin < calgaryBounds.southwest.lng - 0.02) {
         newXMin = calgaryBounds.southwest.lng - 0.02;
