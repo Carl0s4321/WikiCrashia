@@ -17,6 +17,7 @@ function SmallFeed({ tweets }) {
             time={tweet.time}
             date={tweet.date}
             miniVer={true}
+            severity={tweet.severity}
           />
         );
       })}
@@ -31,7 +32,11 @@ export function FeedFloat({ selectedCrash, setSelectedCrash }) {
     async function getTweet() {
       const response = await fetchCrashTweets(selectedCrash._id);
       if (response.status === 200) {
-        setSelectedCrashTweets(response.data);
+        const tweetsWithSeverity = response.data.map(tweet => ({
+            ...tweet,
+            severity: selectedCrash.severity
+        }));
+        setSelectedCrashTweets(tweetsWithSeverity);
       }
     }
 
