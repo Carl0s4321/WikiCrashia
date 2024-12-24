@@ -31,7 +31,9 @@ To set up the project for development, you'll need to clone the repository and i
 4. create config.env
 5. write ATLAS_URI=[insert your connection string]
 6. cd ../frontend
-7. npm install
+7. create .env file
+8. Add API keys
+9. npm install
 
 ## Running the frontend
 
@@ -43,7 +45,9 @@ To set up the project for development, you'll need to clone the repository and i
 ## Running the Backend
 
 1. `npm install`
-2. `npm run start:backend`
+2. create config.env
+3. Add API keys
+4. `npm run start:backend`
 
 ## Running both frontend and backend
 

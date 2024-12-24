@@ -51,7 +51,6 @@ const startServer = async () => {
 
 
     await rettiwtService.start();
-    rettiwtService.printTweets();
 
     httpServer.listen(PORT, async () => {
         console.log(`server connected to port ${PORT}`);
