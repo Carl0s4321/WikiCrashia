@@ -35,6 +35,7 @@ To set up the project for development, you'll need to clone the repository and i
 8. Add API keys
 9. npm install
 
+
 ## Running the frontend
 
 1. `cd frontend` to goto the right folder.
@@ -50,5 +51,5 @@ To set up the project for development, you'll need to clone the repository and i
 4. `npm run start:backend`
 
 ## Running both frontend and backend
-
 1. `npm start`
+
