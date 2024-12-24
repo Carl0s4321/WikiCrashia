@@ -32,9 +32,9 @@ To set up the project for development, you'll need to clone the repository and i
 5. write ATLAS_URI=[insert your connection string]
 6. cd ../frontend
 7. create .env file
-8. VITE_GOOGLE_MAPS_API_KEY=AIzaSyBACv9MvR_e35IFTZ0nEvvtOcPdL2HoUk0
-9. VITE_MAP_ID=544506166e07eee1
-10. npm install
+8. Add API keys
+9. npm install
+
 
 ## Running the frontend
 
@@ -47,14 +47,9 @@ To set up the project for development, you'll need to clone the repository and i
 
 1. `npm install`
 2. create config.env
-3. ATLAS_URI=mongodb+srv://rahat:r4h4tcluster0@cluster0.rykzc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-SECRET_KEY=123
-RETTIWT_API_KEY = a2R0PUhtcHdxM2g3NHc5aGgwbTdaRWN5bjgwdTY4bEtpSnlON1RmWGtRYno7YXV0aF90b2tlbj00MDU5MjRlYTYwM2JkMjc1NWY2MGNmMWEyZTczZTM2OTAzYWI1NjIyO2N0MD05M2FmMWZkMzg2NmM5YTRlM2Q2OWFjMDZmOGNhMzJkZjA5MDg0OTY3NTBlOTc0NDUzNGY1MGFjYjg4N2UzZjBmNzY0NjVjMTI1NGU2MGZkNzM3NDRjNGM4ZTdmM2MwNTAwYTU2ZDczZGQyN2YyOTVlNzNmMTkxYjZjNDZmZTQ2YzA3MGY0N2IzYmM2NGI3Mjk1MzU4YThjYzk1MWExM2VjO3R3aWQ9dSUzRDE4NjIzNzg2Nzc1NTM4MzE5MzY7
-GOOGLE_API_KEY=AIzaSyA-UqCNeEtq4BE7GqZ6OP5uSZL1p_sN87o
-GOOGLE_MAPS_API_KEY=AIzaSyD2CkoMm-lgo-PXfLV0iXscfRQECMb6eMw
+3. Add API keys
 4. `npm run start:backend`
 
 ## Running both frontend and backend
-
 1. `npm start`
 
