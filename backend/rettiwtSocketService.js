@@ -6,8 +6,10 @@ const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@googl
 const fs = require('fs').promises;
 const path = require('path');
 const { convertToDate } = require('./dateConverter');
+const CrashSeverityClassifier = require('./modelFiles/severityModel');
 
 const googleMapsClient = new Client({});
+
 
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
@@ -99,7 +101,7 @@ async function extractAddress(text) {
 
 
 class RettiwtSocketService {
-    constructor(socketIO) {
+    constructor(socketIO, classifier) {
         this.io = socketIO;
         this.currentTweets = [];
         this.rettiwt = new Rettiwt({ apiKey: process.env.RETTIWT_API_KEY});
@@ -113,6 +115,7 @@ class RettiwtSocketService {
         this.maxRequests = 30;
         this.resetTime = new Date() + this.updateInterval;
         this.lastIdFile = path.join(__dirname, 'lastTweetId.json');
+        this.classifier = classifier;
     }
 
     getCurrentTweets() {
@@ -176,13 +179,11 @@ class RettiwtSocketService {
     }
 
     async fetchTweets() {
-
         try {
             const searchParams = {
                 hashtags:["yyctraffic", "yycroads"],
                 excludeWords: ["CLEAR", "Update"],
                 startDate: new Date('2024-12-20'), 
-                endDate: new Date('2024-12-21')
             };
 
             if (this.lastId) {
@@ -216,7 +217,7 @@ class RettiwtSocketService {
     }
 
     async processTweets(tweetsList) {
-            tweetsList = tweetsList.map((tweet) => {
+        tweetsList = tweetsList.map((tweet) => {
             const {localDate, localTime} = convertUTCToMountain(tweet.createdAt);
             const profilePic = getHighQualImageUrl(tweet.tweetBy.profileImage);
             const dateTime = convertToDate(localDate, localTime);
@@ -231,9 +232,15 @@ class RettiwtSocketService {
             return {...tweet, address, location: coords};
         }));
 
-        
+        const filteredTweets = addressTweets.filter(tweet => tweet !== null);
 
-        return addressTweets.filter(tweet => tweet !== null);
+        const severityTweets = await Promise.all(filteredTweets.map(async (tweet) => {
+            const severityArray = await this.classifier.predict(tweet.fullText, tweet.localTime);
+            const severity = severityArray.indexOf(Math.max(...severityArray));
+            return {...tweet, severity: severity};
+        }));
+
+        return severityTweets;
 
     }
     async verifyApiKey() {

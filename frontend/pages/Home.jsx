@@ -7,13 +7,16 @@ import {
 } from "@vis.gl/react-google-maps";
 import Slider from "../components/Slider";
 import { useDateStore } from "../src/store/dateStore";
+import { useSeverityStore } from "../src/store/severityStore";
 import { FeedFloat } from "../components/FeedComponents/FeedFloat";
 
 export function Home() {
   const { date } = useDateStore();
+  const { severity } = useSeverityStore();
   const [crashes, setCrashes] = useState([]);
   const [filteredCrashes, setFilteredCrashes] = useState([]);
   const [selectedCrash, setSelectedCrash] = useState(null);
+  
 
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapID = import.meta.env.VITE_MAP_ID;
@@ -33,16 +36,27 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    let filtered = [...crashes];
+
     if (date.startDate || date.endDate) {
-      const filtered = crashes.filter((crash) => {
+      filtered = crashes.filter((crash) => {
         const crashDate = new Date(crash.date);
         return crashDate >= date.startDate && crashDate <= date.endDate;
       });
-      setFilteredCrashes(filtered);
-    } else {
-      setFilteredCrashes(crashes);
+
     }
-  }, [date]);
+    if (severity !== null) {
+        filtered = filtered.filter((crash) => crash.severity === severity);
+    }
+
+    setFilteredCrashes(filtered);
+  }, [crashes, date, severity]);
+
+
+  const getPinColor = (severity) => {
+    return severityConfigs[severity]?.pinColor || "#6B7280";
+  };
+
 
   return (
     <APIProvider apiKey={googleMapsApiKey}>

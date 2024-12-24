@@ -12,6 +12,7 @@ const loadClassifier = require('./loadClassifier');
 
 const app = express();
 const PORT = 3000;
+let classifier; 
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -39,17 +40,17 @@ io.on('connection', (socket) => {
 const startServer = async () => {
 
     await connect.connectToServer();
-    const rettiwtService = new RettiwtSocketService(io);
-    app.set('rettiwtService', rettiwtService);
-
     try {
         classifier = await loadClassifier();
     } catch (error) {
         console.log("Couldn't load model: ", error);
     }
 
+    const rettiwtService = new RettiwtSocketService(io, classifier);
+    app.set('rettiwtService', rettiwtService);
 
-    await rettiwtService.start(classifier);
+
+    await rettiwtService.start();
     rettiwtService.printTweets();
 
     httpServer.listen(PORT, async () => {

@@ -22,13 +22,8 @@ async function clearColl(db){
 // INSERT BATCH
 tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
 
-
-
-
     const tweets = req.body.tweets
     const db = database.getDb();
-
-
 
     try{
         let bulkOps = []
@@ -42,6 +37,7 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
 
             const dateTimeConvert = convertToDate(tweet.localDate, tweet.localTime);
             if(!crash){
+                
                 const newCrash = {
                     location: {
                         actualAddress: tweet.address,
@@ -51,7 +47,8 @@ tweetRoutes.route('/tweets/bulk').post(async (req, res) => {
                     },
                     date: tweet.localDate,
                     time: tweet.localTime,
-                    dateTime: dateTimeConvert
+                    dateTime: dateTimeConvert,
+                    severity: tweet.severity
                 }
                 const crashResult = await db.collection('crashes').insertOne(newCrash);
                 crashId = crashResult.insertedId;
